@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="description"
+        content="Modern Benchmark Suite for Instruction-Guided Video Editing Assessment (IVEBench).">
+  <meta name="keywords" content="Instruction-Guided Video Editing, Benchmark, MLLM">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>IVEBench: Modern Benchmark Suite for Instruction-Guided Video Editing Assessment</title>
+
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-PYVRSFMDRL"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+
+    function gtag() {
+      dataLayer.push(arguments);
+    }
+
+    gtag('js', new Date());
+
+    gtag('config', 'G-PYVRSFMDRL');
+  </script>
+
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro"
+        rel="stylesheet">
+
+  <link rel="stylesheet" href="./static/css/bulma.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-carousel.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-slider.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  <link rel="stylesheet" href="./static/css/index.css">
+  <link rel="icon" href="./static/images/ivebenchicon.svg">
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script defer src="./static/js/fontawesome.all.min.js"></script>
+  <script src="./static/js/bulma-carousel.min.js"></script>
+  <script src="./static/js/bulma-slider.min.js"></script>
+  <script src="./static/js/index.js"></script>
+
+  <!-- Leaderboard styles and scripts -->
+  <style>
+    .no-sort {
+        cursor: default;
+        pointer-events: none;
+        background-image: none !important;
+    }
+    
+    /* Leaderboard table styles */
+    #results {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 14px;
+        margin: 20px auto;
+    }
+    
+    #results th {
+        background-color: #f5f5f5;
+        padding: 12px 8px;
+        text-align: center;
+        border: 1px solid #ddd;
+        font-weight: bold;
+        cursor: pointer;
+        user-select: none;
+        transition: background-color 0.2s;
+    }
+    
+    #results th.no-sort {
+        cursor: default;
+    }
+    
+    #results td {
+        padding: 8px;
+        text-align: center;
+        border: 1px solid #ddd;
+        transition: background-color 0.2s;
+    }
+    
+    /* Row hover effect */
+    #results tbody tr:hover {
+        background-color: #f0f0f0;
+    }
+    
+    #results tbody tr:hover td {
+        background-color: #f0f0f0;
+    }
+    
+    /* Header hover effect */
+    #results th:not(.no-sort):hover {
+        background-color: #e0e0e0;
+    }
+    
+    /* Active column highlighting */
+    #results th.js-sort-active {
+        background-color: #d4edda;
+    }
+    
+    #results td.active-column {
+        background-color: #f0f9f4;
+    }
+    
+    #results tbody tr:hover td.active-column {
+        background-color: #e0f0e8;
+    }
+    
+    /* Default: no arrow */
+    #results th:not(.no-sort)::after {
+        content: '';
+    }
+    
+    /* Active state shows arrows */
+    #results th.js-sort-active::after {
+        content: ' ⇅';
+        opacity: 1;
+    }
+    
+    /* Ascending arrow */
+    #results th.js-sort-asc::after {
+        content: ' ↑';
+    }
+    
+    /* Descending arrow */
+    #results th.js-sort-desc::after {
+        content: ' ↓';
+    }
+    
+    .video-duration {
+        background-color: #f0f0f0;
+        padding: 15px;
+        border-radius: 5px;
+        margin-bottom: 20px;
+        text-align: center;
+    }
+    
+    .video-duration p {
+        margin: 5px 0;
+    }
+
+    .leaderboard-container {
+        overflow-x: auto;
+        margin: 20px 0;
+    }
+  </style>
+  
+  <script type="text/javascript">
+    // JavaScript Sort Table
+    document.addEventListener('DOMContentLoaded', function() {
+      
+      const table = document.querySelector('.js-sort-table');
+      if (!table) return;
+      
+      // Get all headers from the second row (the actual sortable headers)
+      const headerRow = table.querySelectorAll('thead tr')[1];
+      const headers = headerRow.querySelectorAll('th:not(.no-sort)');
+      
+      // Function to update active column highlighting
+      function updateActiveColumn(activeColumnIndex) {
+        // Remove all active-column classes
+        const allCells = table.querySelectorAll('td');
+        allCells.forEach(cell => cell.classList.remove('active-column'));
+        
+        // Add active-column class to cells in the active column
+        const rows = table.querySelectorAll('tbody tr');
+        rows.forEach(row => {
+          const cell = row.cells[activeColumnIndex];
+          if (cell) {
+            cell.classList.add('active-column');
+          }
+        });
+      }
+      
+      headers.forEach((header, headerIndex) => {
+        let ascending = true;
+        
+        // Calculate the actual column index in the table
+        let columnIndex = 0;
+        const allHeaders = Array.from(headerRow.querySelectorAll('th'));
+        for (let i = 0; i <= allHeaders.indexOf(header); i++) {
+          if (i === allHeaders.indexOf(header)) {
+            columnIndex = i + 5; // Add 5 for the first row columns (which are no-sort)
+            break;
+          }
+        }
+        
+        header.addEventListener('click', function() {
+          const tbody = table.querySelector('tbody');
+          const rows = Array.from(tbody.querySelectorAll('tr'));
+          
+          // Remove active class and direction classes from all headers
+          headers.forEach(h => {
+            h.classList.remove('js-sort-active');
+            h.classList.remove('js-sort-asc');
+            h.classList.remove('js-sort-desc');
+          });
+          
+          // Add active class to current header
+          header.classList.add('js-sort-active');
+          
+          // Add direction class
+          if (ascending) {
+            header.classList.add('js-sort-asc');
+          } else {
+            header.classList.add('js-sort-desc');
+          }
+          
+          // Update active column highlighting
+          updateActiveColumn(columnIndex);
+          
+          // Sort rows based on the clicked column
+          rows.sort((a, b) => {
+            let aValue = a.cells[columnIndex].textContent.trim();
+            let bValue = b.cells[columnIndex].textContent.trim();
+            
+            // Handle special cases
+            if (aValue === '-') return ascending ? 1 : -1;
+            if (bValue === '-') return ascending ? -1 : 1;
+            
+            // Try to parse as number
+            const aNum = parseFloat(aValue);
+            const bNum = parseFloat(bValue);
+            
+            if (!isNaN(aNum) && !isNaN(bNum)) {
+              return ascending ? aNum - bNum : bNum - aNum;
+            }
+            
+            // String comparison
+            return ascending 
+              ? aValue.localeCompare(bValue)
+              : bValue.localeCompare(aValue);
+          });
+          
+          // Reorder rows
+          rows.forEach(row => tbody.appendChild(row));
+          
+          // Update row numbers
+          updateRowNumbers();
+          
+          // Toggle sort direction
+          ascending = !ascending;
+        });
+      });
+      
+      // Set initial sort on "w subs" column (Overall with subs - index 6)
+      const initialSortHeader = headers[1]; // Second sortable header (w subs in Overall)
+      if (initialSortHeader) {
+        initialSortHeader.classList.add('js-sort-active');
+        initialSortHeader.classList.add('js-sort-desc');
+        
+        // Calculate column index for initial active column
+        const allHeaders = Array.from(headerRow.querySelectorAll('th'));
+        const columnIndex = allHeaders.indexOf(initialSortHeader) + 5;
+        updateActiveColumn(columnIndex);
+      }
+      
+      // Initialize row numbers
+      updateRowNumbers();
+    });
+
+    function updateRowNumbers() {
+      const table = document.querySelector("#results");
+      if (!table) return;
+      const rows = table.querySelectorAll("tbody tr");
+      rows.forEach((row, index) => {
+        row.querySelector("td").textContent = index + 1;
+      });
+    }
+  </script>
+</head>
+<body>
+
+<nav class="navbar" role="navigation" aria-label="main navigation">
+  <div class="navbar-brand">
+    <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+    </a>
+  </div>
+  <div class="navbar-menu">
+    <div class="navbar-start" style="flex-grow: 1; justify-content: center;">
+      <a class="navbar-item" href="https://github.com/RyanChenYN?tab=repositories">
+      <span class="icon">
+          <i class="fas fa-home"></i>
+      </span>
+      </a>
+
+      <div class="navbar-item has-dropdown is-hoverable">
+        <a class="navbar-link">
+          More Research
+        </a>
+        <div class="navbar-dropdown">
+          <a class="navbar-item" href="https://hypernerf.github.io">
+            HyperNeRF
+          </a>
+          <a class="navbar-item" href="https://nerfies.github.io">
+            Nerfies
+          </a>
+          <a class="navbar-item" href="https://latentfusion.github.io">
+            LatentFusion
+          </a>
+          <a class="navbar-item" href="https://photoshape.github.io">
+            PhotoShape
+          </a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</nav>
+
+
+<section class="hero">
+  <div class="hero-body">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered">
+        <div class="column has-text-centered">
+          <h1 class="title is-1 publication-title">IVEBench: Modern Benchmark Suite for Instruction-Guided Video Editing Assessment</h1>
+          <div class="is-size-5 publication-authors">
+            <span class="author-block">
+              <a href="https://scholar.google.com/citations?user=-WKfgd0AAAAJ">Yinan Chen</a><sup>1</sup>,</span>
+            <span class="author-block">
+              <a href="https://zhangzjn.github.io/">Jiangning Zhang</a><sup>1,2</sup>,</span>
+            <span class="author-block">
+              <a href="https://sjtuplayer.github.io/">Teng Hu</a><sup>3</sup>,
+            </span>
+            <span class="author-block">
+              <a>Yuxiang Zeng</a><sup>4</sup>,
+            </span>
+            <span class="author-block">
+              <a href="https://xzc-zju.github.io/">Zhucun Xue</a><sup>1</sup>,
+            </span>
+            <span class="author-block">
+              <a href="https://scholar.google.com/citations?user=gUJWww0AAAAJ">Qingdong He</a><sup>2</sup>,
+            </span>
+            <span class="author-block">
+              <a href="https://scholar.google.com/citations?user=fqte5H4AAAAJ">Chengjie Wang</a><sup>2,3</sup>
+            </span>
+            <span class="author-block">
+              <a href="https://person.zju.edu.cn/yongliu">Yong Liu</a><sup>1</sup>
+            </span>
+            <span class="author-block">
+              <a href="https://huuxiaobin.github.io/">Xiaobin Hu</a><sup>2,5</sup>
+            </span>
+            <span class="author-block">
+              <a href="https://yanshuicheng.info/">Shuicheng Yan</a><sup>6</sup>
+            </span>
+          </div>
+
+          <div class="is-size-5 publication-authors">
+            <span class="author-block"><sup>1</sup>Zhejiang University,</span>
+            <span class="author-block"><sup>2</sup>Tencent Youtu Lab,</span>
+            <span class="author-block"><sup>3</sup>Shanghai Jiao Tong University,</span>
+            <span class="author-block"><sup>4</sup>University of Auckland,</span>
+            <span class="author-block"><sup>5</sup>Technische Universität München,</span>
+            <span class="author-block"><sup>6</sup>National University of Singapore</span>
+          </div>
+
+          <div class="column has-text-centered">
+            <div class="publication-links">
+              <!-- PDF Link. -->
+              <span class="link-block">
+                <a href="https://arxiv.org/pdf/2011.12948"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fas fa-file-pdf"></i>
+                  </span>
+                  <span>Paper</span>
+                </a>
+              </span>
+              <span class="link-block">
+                <a href="https://arxiv.org/abs/2011.12948"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="ai ai-arxiv"></i>
+                  </span>
+                  <span>arXiv</span>
+                </a>
+              </span>
+              <!-- Video Link. -->
+              <!-- <span class="link-block">
+                <a href="https://www.youtube.com/watch?v=MrKrnHhk8IA"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fab fa-youtube"></i>
+                  </span>
+                  <span>Video</span>
+                </a> -->
+              </span>
+              <!-- Code Link. -->
+              <span class="link-block">
+                <a href="https://github.com/google/nerfies"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fab fa-github"></i>
+                  </span>
+                  <span>Code</span>
+                  </a>
+              </span>
+              <!-- Dataset Link. -->
+              <span class="link-block">
+                <a href="https://github.com/google/nerfies/releases/tag/0.1"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="far fa-images"></i>
+                  </span>
+                  <span>Data</span>
+                  </a>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- <section class="hero teaser">
+  <div class="container is-max-desktop">
+    <div class="hero-body">
+      <video id="teaser" autoplay muted loop playsinline height="100%">
+        <source src="./static/videos/teaser.mp4"
+                type="video/mp4">
+      </video>
+      <h2 class="subtitle has-text-centered">
+        <span class="dnerf">Nerfies</span> turns selfie videos from your phone into
+        free-viewpoint
+        portraits.
+      </h2>
+    </div>
+  </div>
+</section> -->
+
+<section class="hero teaser">
+  <div class="container is-max-desktop">
+    <div class="hero-body" style="text-align: center;">
+      <!-- PNG 图片替代视频 -->
+      <img 
+        id="teaser-image"
+        src="./static/images/teaser2.png" 
+        alt="Teaser Image"
+        style="width: 100%; height: auto; border-radius: 8px;"
+      >
+
+      <h2 class="subtitle overview-text">
+        <strong>Overview of our proposed IVEBench.</strong>
+        <strong><em>1)</em></strong> We construct a diverse video corpus consisting of 
+        600 high-quality source videos systematically organized across 7 semantic dimensions. 
+        <strong><em>2)</em></strong> For source videos, we design carefully crafted edit prompts, 
+        covering 8 major editing task categories with 35 subcategories. 
+        <strong><em>3)</em></strong> We establish a comprehensive three-dimensional evaluation protocol 
+        comprising 12 metrics, enabling human-aligned benchmarking of state-of-the-art IVE methods.
+      </h2>
+    </div>
+  </div>
+</section>
+
+
+<section class="hero is-light is-small">
+  <div class="hero-body">
+    <div class="container">
+      <div id="results-carousel" class="carousel results-carousel">
+        <div class="item item-short_0002">
+          <video poster="" id="short_0002" autoplay controls muted loop playsinline height="100%">
+            <source src="./static/videos/short_0002.mp4"
+                    type="video/mp4">
+          </video>
+        </div>
+        <div class="item item-short_0004">
+          <video poster="" id="short_0004" autoplay controls muted loop playsinline height="100%">
+            <source src="./static/videos/short_0004.mp4"
+                    type="video/mp4">
+          </video>
+        </div>
+        <div class="item item-short_0067">
+          <video poster="" id="short_0067" autoplay controls muted loop playsinline height="100%">
+            <source src="./static/videos/short_0067.mp4"
+                    type="video/mp4">
+          </video>
+        </div>
+        <div class="item item-short_0068">
+          <video poster="" id="short_0068" autoplay controls muted loop playsinline height="100%">
+            <source src="./static/videos/short_0068.mp4"
+                    type="video/mp4">
+          </video>
+        </div>
+        <div class="item item-short_0073">
+          <video poster="" id="short_0073" autoplay controls muted loop playsinline height="100%">
+            <source src="./static/videos/short_0073.mp4"
+                    type="video/mp4">
+          </video>
+        </div>
+        <div class="item item-short_0122">
+          <video poster="" id="short_0122" autoplay controls muted loop playsinline height="100%">
+            <source src="./static/videos/short_0122.mp4"
+                    type="video/mp4">
+          </video>
+        </div>
+        <div class="item item-short_0185">
+          <video poster="" id="short_0185" autoplay controls muted loop playsinline height="100%">
+            <source src="./static/videos/short_0185.mp4"
+                    type="video/mp4">
+          </video>
+        </div>
+        <div class="item item-short_0218">
+          <video poster="" id="short_0218" autoplay controls muted loop playsinline height="100%">
+            <source src="./static/videos/short_0218.mp4"
+                    type="video/mp4">
+          </video>
+        </div>
+        <div class="item item-short_0258">
+          <video poster="" id="short_0258" autoplay controls muted loop playsinline height="100%">
+            <source src="./static/videos/short_0258.mp4"
+                    type="video/mp4">
+          </video>
+        </div>
+        <div class="item item-short_0274">
+          <video poster="" id="short_0274" autoplay controls muted loop playsinline height="100%">
+            <source src="./static/videos/short_0274.mp4"
+                    type="video/mp4">
+          </video>
+        </div>
+        <!-- <div class="item item-long_0015">
+          <video poster="" id="long_0015" autoplay controls muted loop playsinline height="100%">
+            <source src="./static/videos/long_0015.mp4"
+                    type="video/mp4">
+          </video>
+        </div> -->
+        <div class="item item-long_0118">
+          <video poster="" id="long_0118" autoplay controls muted loop playsinline height="100%">
+            <source src="./static/videos/long_0118.mp4"
+                    type="video/mp4">
+          </video>
+        </div>
+        <div class="item item-long_0186">
+          <video poster="" id="long_0186" autoplay controls muted loop playsinline height="100%">
+            <source src="./static/videos/long_0186.mp4"
+                    type="video/mp4">
+          </video>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <!-- Abstract. -->
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Abstract</h2>
+        <div class="content has-text-justified">
+          <p>
+            Instruction-guided video editing has emerged as a rapidly advancing research direction, 
+            offering new opportunities for intuitive content transformation while also posing significant 
+            challenges for systematic evaluation.
+            Existing video editing benchmarks fail to support the evaluation of instruction-guided video 
+            editing adequately and further suffer from limited source diversity, narrow task coverage 
+            and incomplete evaluation metrics.
+            To address the above limitations, we introduce IVEBench, a modern benchmark suite specifically 
+            designed for instruction-guided video editing assessment. IVEBench comprises a diverse database 
+            of 600 high-quality source videos, spanning seven semantic dimensions, and covering video lengths 
+            ranging from 32 to 1,024 frames. It further includes 8 categories of editing tasks with 35 subcategories, 
+            whose prompts are generated and refined through large language models and expert review.
+            Crucially, IVEBench establishes a three-dimensional evaluation protocol encompassing video 
+            quality, instruction compliance and video fidelity, integrating both traditional metrics and 
+            multimodal large language model-based assessments. 
+            Extensive experiments demonstrate the effectiveness of IVEBench in benchmarking state-of-the-art 
+            instruction-guided video editing methods, showing its ability to provide comprehensive and human-aligned 
+            evaluation outcomes.
+          </p>
+        </div>
+      </div>
+    </div>
+    <!--/ Abstract. -->
+
+  </div>
+</section>
+
+<!-- LEADERBOARD SECTION -->
+<section class="section">
+  <div class="container">
+    
+    <div class="columns is-centered">
+      <div class="column is-full has-text-centered content">
+
+        <h2 class="title is-3" id="leaderboard">Leaderboard</h2>
+        <div class="content">
+          <p class="mt-3">Accuracy scores on Video-MME are presented for short, medium, and long videos, taking the corresponding subtitles as input or not.
+          </p>
+          <div class="video-duration">
+            <p>
+              <strong>Short Video:</strong> &lt; 2min  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+              <strong>Medium Video:</strong> 4min ~ 15min  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+              <strong>Long Video:</strong> 30min ~ 60min
+            </p>
+            <p>
+              By default, this leaderboard is sorted by results with subtitles. To view other sorted results, please click on the corresponding cell.
+            </p>
+          </div>
+
+          <div class="leaderboard-container">
+          <table class="js-sort-table" id="results">
+            <thead>
+              <tr>
+                <th rowspan="2" class="no-sort" style="vertical-align: middle; width: 50px;"><strong>#</strong></th>
+                <th rowspan="2" class="no-sort" style="vertical-align: middle; width: 180px;"><strong>Model</strong></th>
+                <th rowspan="2" class="no-sort" style="vertical-align: middle; width: 80px;"><strong>LLM<br>Params</strong></th>
+                <th rowspan="2" class="no-sort" style="vertical-align: middle; width: 100px;"><strong>Frames</strong></th>
+                <th rowspan="2" class="no-sort" style="vertical-align: middle; width: 110px;"><strong>Date</strong></th>
+                <th colspan="2" class="no-sort" style="vertical-align: middle;"><strong>Overall (%)</strong></th>
+                <th colspan="2" class="no-sort" style="vertical-align: middle;"><strong>Short Video (%)</strong></th>
+                <th colspan="2" class="no-sort" style="vertical-align: middle;"><strong>Medium Video (%)</strong></th> 
+                <th colspan="2" class="no-sort" style="vertical-align: middle;"><strong>Long Video (%)</strong></th> 
+              </tr>
+              <tr>
+                <th><strong>w/o subs</strong></th>
+                <th><strong>w subs</strong></th>
+                <th><strong>w/o subs</strong></th>
+                <th><strong>w subs</strong></th>
+                <th><strong>w/o subs</strong></th>
+                <th><strong>w subs</strong></th>
+                <th><strong>w/o subs</strong></th>
+                <th><strong>w subs</strong></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>1</td>
+                <td style="text-align: left; padding: 2px 10px;">
+                  <b>
+                    <a href="https://github.com/bytedance/video-SALMONN-2" style="font-size: 16px; margin-left: 5px;">video-SALMONN 2+</a>
+                    <p style="font-size: 12px; margin-left: 5px; color: #858383;">THU & ByteDance</p>
+                  </b>
+                </td>
+                <td>72B</td>
+                <td>10 fps</td>
+                <td><strong style="color: #22a56e;">2025-09-28</strong></td>
+                <td><b>79.7</b></td>
+                <td><b>81.6</b></td>
+                <td>85.0</td>
+                <td>85.4</td>
+                <td>81.7</td>
+                <td>83.0</td>
+                <td>72.3</td>
+                <td>76.4</td>                                 
+              </tr>
+              <tr>
+                <td>2</td>
+                <td style="text-align: left; padding: 2px 10px;">
+                  <b>
+                    <a href="https://storage.googleapis.com/deepmind-media/gemini/gemini_v1_5_report.pdf" style="font-size: 16px; margin-left: 5px;">Gemini 1.5 Pro</a>
+                    <p style="font-size: 12px; margin-left: 5px; color: #858383;">Google</p>
+                  </b>
+                </td>
+                <td>-</td>
+                <td>1/0.5 fps</td>
+                <td>2024-06-15</td>
+                <td><b>75.0</b></td>
+                <td><b>81.3</b></td>
+                <td>81.7</td>
+                <td>84.5</td>
+                <td>74.3</td>
+                <td>81.0</td>
+                <td>67.4</td>
+                <td>77.4</td>                                 
+              </tr>
+              <tr>
+                <td>3</td>
+                <td style="text-align: left; padding: 2px 10px;">
+                  <b>
+                    <a href="https://github.com/SCZwangxiao/video-FlexReduc" style="font-size: 16px; margin-left: 5px;">AdaReTaKe</a>
+                    <p style="font-size: 12px; margin-left: 5px; color: #858383;">HIT & Huawei</p>
+                  </b>
+                </td>
+                <td>72B</td>
+                <td>1024</td>
+                <td><strong style="color: #22a56e;">2025-03-04</strong></td>
+                <td><b>73.5</b></td>
+                <td><b>79.6</b></td>
+                <td>80.6</td>
+                <td>82.8</td>
+                <td>74.9</td>
+                <td>79.7</td>
+                <td>65.0</td>
+                <td>76.4</td>                                 
+              </tr>
+              <!-- 这里继续添加剩余的所有行数据... -->
+              <tr>
+                <td>4</td>
+                <td style="text-align: left; padding: 2px 10px;">
+                  <b>
+                    <a href="https://github.com/Kwai-Keye/Keye" style="font-size: 16px; margin-left: 5px;">Keye-VL-1.5</a>
+                    <p style="font-size: 12px; margin-left: 5px; color: #858383;">Kwai Keye Team</p>
+                  </b>
+                </td>
+                <td>8B</td>
+                <td>64</td>
+                <td><strong style="color: #22a56e;">2025-08-29</strong></td>
+                <td><b>73.0</b></td>
+                <td><b>74.0</b></td>
+                <td>81.2</td>
+                <td>84.0</td>
+                <td>70.7</td>
+                <td>71.9</td>
+                <td>67.1</td>
+                <td>66.2</td>                                 
+              </tr>
+              <tr>
+                <td>5</td>
+                <td style="text-align: left; padding: 2px 10px;">
+                  <b>
+                    <a href="https://github.com/Hui-design/TSPO" style="font-size: 16px; margin-left: 5px;">TSPO</a>
+                    <p style="font-size: 12px; margin-left: 5px; color: #858383;">XJTU & TeleAI & USTB</p>
+                  </b>
+                </td>
+                <td>72B</td>
+                <td>128</td>
+                <td><strong style="color: #22a56e;">2025-09-22</strong></td>
+                <td><b>73.0</b></td>
+                <td><b>73.7</b></td>
+                <td>81.3</td>
+                <td>83.4</td>
+                <td>73.6</td>
+                <td>74.2</td>
+                <td>64.0</td>
+                <td>63.6</td>                                 
+              </tr>
+              <!-- 继续添加第6-20行... 这里省略以节省空间 -->
+            </tbody>                                                   
+          </table>
+          </div>
+
+          <p style="margin-top: 20px;">
+            <strong style="color: #22a56e; font-size: 18px;">Green date</strong> indicates the newly added/updated models  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            - indicates closed-source models
+          </p>
+
+          <p style="text-align: left; margin-top: 15px;">
+            1* The short and medium videos are sampled at 1 fps, while the long videos are sampled at 0.5 fps to ensure the stability of the API.
+            <br>2* The videos less than 384 seconds are sampled at 1 fps, and for those longer than 384 seconds, we extract 384 frames uniformly.
+            <br>3* The videos are sampled at 2 fps, and the upper limit is 768 frames.
+            <br>4* The videos are sampled at 1 fps, and the upper limit is 600 frames.
+            <br>5* The videos are sampled at 2 fps, and the upper limit is 480 frames.
+            <br>6* The videos are sampled at 10 fps, and the upper limit is 768 frames.
+            <br>7* The videos are sampled at 1 fps, and the upper limit is 256 frames.
+          </p>
+
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</section>
+<!-- END LEADERBOARD SECTION -->
+
+<section class="hero is-light is-small">
+  <div class="hero-body has-text-centered">
+  <h1 class="title is-1 mathvista_other">
+    <span class="mathvista_other" style="vertical-align: middle">Benchmark</span>
+  </h1>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+
+    <div class="columns is-centered">
+      <div class="column">
+        <div class="content has-text-centered">
+          <h2 class="title is-3" style="margin-top: 30px;">Data Pipeline</h2>
+          <img src="./static/images/pipeline.png" alt="data-composition" style="max-width: 90%; display: block; margin: 0 auto;">
+          <p style="text-align: center; margin: 40px auto 0 auto; width: 50%;"> 
+              <strong>Data acquisition and processing pipeline of IVEBench. </strong><strong><em>1)</em></strong> Curation process to 600 high-quality diverse videos. <strong><em>2)</em></strong> Well-designed pipeline for comprehensive editing prompts.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="columns is-centered">
+      <div class="column">
+        <div class="content has-text-centered">
+          <h2 class="title is-3" style="margin-top: 30px;">Benchmark Statistics</h2>
+          <img src="./static/images/data_fig1.png" alt="data-composition" style="max-width: 90%; display: block; margin: 0 auto;">
+          <p style="text-align: center; margin: 40px auto 0 auto; width: 50%;"> 
+              Statistical distributions of IVEBench
+          </p>
+
+        </div>
+      </div>
+    </div>
+
+    <div class="columns is-centered">
+      <div class="column">
+        <div class="content has-text-centered">
+          <h2 class="title is-3">Benchmark Comparison</h2>
+          <img src="./static/images/benchmark_compare.png" alt="data-composition" style="max-width: 90%;">
+          <p style="text-align: center; margin-left: auto; margin-right: auto; width: 50%;">
+            <strong>Attributes comparison with open-source video editing benchmarks.</strong> Our proposed IVEBench boasts distinct advantages across various key dimensions.
+          </p>
+        </div>
+      </div>
+    </div>
+    
+  
+</section>
+
+
+<section class="hero is-light is-small">
+  <div class="hero-body has-text-centered">
+  <h1 class="title is-1 mathvista_other">
+    <span class="mathvista_other" style="vertical-align: middle">Experiments</span>
+  </h1>
+  </div>
+</section>
+
+
+<section class="section">
+  <div class="container">
+    <div class="columns is-centered">
+      <div class="column">
+        <div class="content has-text-centered">
+          <h2 class="title is-3" style="margin-top: 30px;">Quantitative Visualization</h2>
+          <img src="./static/images/radar_chart.png" alt="data-composition" style="max-width: 90%; display: block; margin: 0 auto;">
+          <p style="text-align: center; margin: 40px auto 80px auto; width: 50%;"> 
+              <strong>IVEBench Evaluation Results of Video Editing Models.</strong> We visualize the evaluation results of four IVE models in 12 IVEBench metrics. We normalize the results per dimension for clearer comparisons.
+          </p>
+
+          <img src="./static/images/qualitative_analysis.png" alt="data-composition" style="max-width: 90%; display: block; margin: 0 auto;">
+          <p style="text-align: center; margin: 40px auto 80px auto; width: 50%;"> 
+              Qualitative comparison of state-of-the-art IVE methods.
+          </p>
+          <img src="./static/images/qualitative_analysis_appendix.png" alt="data-composition" style="max-width: 90%; display: block; margin: 0 auto;">
+          <p style="text-align: center; margin: 40px auto 80px auto; width: 50%;"> 
+              <strong>Detailed qualitative comparison.</strong> We concatenate the first, middle, and last frames of the video to facilitate comparison of the temporal performance across different models.
+          </p>
+
+        </div>
+      </div>
+    </div>
+</section>
+
+
+
+<section class="section" id="BibTeX">
+  <div class="container is-max-desktop content">
+    <h2 class="title">BibTeX</h2>
+    <pre><code>@article{park2021nerfies,
+  author    = {Park, Keunhong and Sinha, Utkarsh and Barron, Jonathan T. and Bouaziz, Sofien and Goldman, Dan B and Seitz, Steven M. and Martin-Brualla, Ricardo},
+  title     = {IVEBench: Modern Benchmark Suite for Instruction-Guided Video Editing Assessment},
+  journal   = {ICCV},
+  year      = {2021},
+}</code></pre>
+  </div>
+</section>
+
+
+<footer class="footer">
+  <div class="container">
+    <div class="content has-text-centered">
+    <div class="columns is-centered">
+      <div class="column is-8">
+        <div class="content">
+          <p>
+            This website is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">Creative
+            Commons Attribution-ShareAlike 4.0 International License</a>.
+          </p>
+          <p>
+            Website source code based on the <a href="https://nerfies.github.io/"> Nerfies</a> project page. If you want to reuse their <a href="https://github.com/nerfies/nerfies.github.io">source code</a>, please credit them appropriately.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
+
+
+<style>
+/* --------------------------------------
+   学术论文风格标题（带两端对齐）
+-------------------------------------- */
+.overview-text {
+  font-size: 1.05rem;
+  line-height: 1.65;
+  max-width: 900px;
+  margin: 1.5rem auto 0 auto;
+  text-align: justify;              /* ✅ 两端对齐 */
+  text-justify: inter-word;         /* 均匀分布单词间距 */
+  color: #222;
+  hyphens: auto;                    /* 自动断词 */
+}
+
+/* 方法名样式 */
+.overview-text .method {
+  font-family: "Courier New", Courier, monospace;
+  font-weight: bold;
+  color: #333;
+}
+
+/* 响应式微调 */
+@media (max-width: 768px) {
+  .overview-text {
+    font-size: 0.95rem;
+    line-height: 1.55;
+    padding: 0 1rem;
+  }
+}
+</style>
