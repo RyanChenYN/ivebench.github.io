@@ -8,7 +8,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>IVEBench: Modern Benchmark Suite for Instruction-Guided Video Editing Assessment</title>
 
-  <!-- Global site tag (gtag.js) - Google Analytics -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-PYVRSFMDRL"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
@@ -41,7 +40,6 @@
   <script src="./static/js/bulma-slider.min.js"></script>
   <script src="./static/js/index.js"></script>
 
-  <!-- Leaderboard styles and scripts -->
   <style>
     .no-sort {
         cursor: default;
@@ -49,15 +47,14 @@
         background-image: none !important;
     }
     
-    /* Leaderboard table styles */
-    #results {
+    .leaderboard-table {
         width: 100%;
         border-collapse: collapse;
         font-size: 14px;
         margin: 20px auto;
     }
     
-    #results th {
+    .leaderboard-table th {
         background-color: #f5f5f5;
         padding: 12px 8px;
         text-align: center;
@@ -68,65 +65,76 @@
         transition: background-color 0.2s;
     }
     
-    #results th.no-sort {
+    .leaderboard-table th.no-sort {
         cursor: default;
     }
     
-    #results td {
+    .leaderboard-table td {
         padding: 8px;
         text-align: center;
         border: 1px solid #ddd;
         transition: background-color 0.2s;
     }
     
-    /* Row hover effect */
-    #results tbody tr:hover {
+    .leaderboard-table tbody tr:hover {
         background-color: #f0f0f0;
     }
     
-    #results tbody tr:hover td {
+    .leaderboard-table tbody tr:hover td {
         background-color: #f0f0f0;
     }
     
-    /* Header hover effect */
-    #results th:not(.no-sort):hover {
+    .leaderboard-table th:not(.no-sort):hover {
         background-color: #e0e0e0;
     }
     
-    /* Active column highlighting */
-    #results th.js-sort-active {
+    .leaderboard-table th.js-sort-active {
         background-color: #d4edda;
     }
     
-    #results td.active-column {
+    .leaderboard-table td.active-column {
         background-color: #f0f9f4;
     }
     
-    #results tbody tr:hover td.active-column {
+    .leaderboard-table tbody tr:hover td.active-column {
         background-color: #e0f0e8;
     }
     
-    /* Default: no arrow */
-    #results th:not(.no-sort)::after {
+    .leaderboard-table th:not(.no-sort)::after {
         content: '';
     }
     
-    /* Active state shows arrows */
-    #results th.js-sort-active::after {
+    .leaderboard-table th.js-sort-active::after {
         content: ' ⇅';
         opacity: 1;
     }
-    
-    /* Ascending arrow */
-    #results th.js-sort-asc::after {
-        content: ' ↑';
+    .leaderboard-table th.js-sort-asc::after,
+    .leaderboard-table th.js-sort-desc::after {
+        content: '';
+        display: inline-block;
+        margin-left: 6px;
+        width: 0;
+        height: 0;
+        vertical-align: middle;
     }
-    
-    /* Descending arrow */
-    #results th.js-sort-desc::after {
-        content: ' ↓';
+    .leaderboard-table th.js-sort-asc::after {
+        border-left: 5px solid transparent;
+        border-right: 5px solid transparent;
+        border-bottom: 6px solid #ffffff; 
     }
-    
+
+    .leaderboard-table th.js-sort-desc::after {
+        border-left: 5px solid transparent;
+        border-right: 5px solid transparent;
+        border-top: 6px solid #ffffff; 
+    }
+
+    .leaderboard-table thead tr:first-child th {
+      border-right: 1px solid #ddd;
+    }
+    .leaderboard-table thead tr:nth-child(2) th {
+      border-right: 1px solid #ddd;
+    }
     .video-duration {
         background-color: #f0f0f0;
         padding: 15px;
@@ -143,173 +151,461 @@
         overflow-x: auto;
         margin: 20px 0;
     }
+
+    .video-caption {
+        text-align: left;
+        margin-top: 20px;
+        padding: 15px 25px;
+        font-size: 14px;
+        line-height: 1.8;
+        background-color: #f9f9f9;
+        border-radius: 8px;
+        border-left: 4px solid #e0e0e0;
+
+        max-height: 220px;  
+        overflow-y: auto;   
+        overflow-x: hidden; 
+    }
+
+    .video-caption::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    .video-caption::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 4px;
+    }
+
+    .video-caption::-webkit-scrollbar-thumb {
+        background: #c1c1c1;
+        border-radius: 4px;
+    }
+
+    .video-caption::-webkit-scrollbar-thumb:hover {
+        background: #a8a8a8;
+    }
+
+    .video-caption p {
+        margin: 8px 0;
+        word-wrap: break-word;
+    }
+
+    .video-caption .source-label {
+        color: #1e70bf;
+        font-weight: bold;
+    }
+
+    .video-caption .edit-label {
+        color: #ff8c00;
+        font-weight: bold;
+    }
+
+    .video-caption .target-label {
+        color: #e91e63;
+        font-weight: bold;
+    }
+
+    .carousel .item {
+        padding-bottom: 30px;
+    }
+
+  .group-header .category-label {
+      color: #800020;
+      font-weight: bold;
+      flex: 0 0 auto;
+  }
+
+  .group-header .subcategory-label {
+      color: #10d87b;
+      font-weight: bold;
+      flex: 0 0 auto;
+  }
+
+  .group-header .edit-label {
+      color: #ff8c00;
+      font-weight: bold;
+      flex: 0 0 auto;
+  }
+
+    .overview-text {
+      font-size: 1.05rem;
+      line-height: 1.65;
+      max-width: 900px;
+      margin: 1.5rem auto 0 auto;
+      text-align: justify;
+      text-justify: inter-word;
+      color: #222;
+      hyphens: auto;
+    }
+
+    .overview-text .method {
+      font-family: "Courier New", Courier, monospace;
+      font-weight: bold;
+      color: #333;
+    }
+
+@media (max-width: 640px) {
+    .group-header .group-header-top,
+    .group-header .group-header-bottom {
+        flex-direction: row; 
+        flex-wrap: wrap;
+    }
+
+    .group-header .category-label,
+    .group-header .subcategory-label,
+    .group-header .edit-label {
+        margin-right: 0.3rem;
+    }
+
+    .group-header .category-value,
+    .group-header .subcategory-value,
+    .group-header .edit-text {
+        margin-right: 0.8rem;
+    }
+}
+        #results-carousel {
+      position: relative;
+    }
+
+    .video-groups-wrapper {
+      position: relative;
+      overflow: hidden;
+      border-radius: 18px;
+      background-color: rgba(255, 255, 255, 0.92);
+      padding: clamp(1.25rem, 4vw, 2rem);
+    }
+
+    .video-group {
+      display: none;
+      animation: fadeIn 0.45s ease;
+    }
+
+    .video-group.is-active {
+      display: block;
+    }
+
+    .group-header {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.4rem;
+        margin-bottom: clamp(1rem, 2.5vw, 1.6rem);
+        padding: 0.85rem 1.2rem;
+        background: rgba(48, 70, 141, 0.07);
+        border: 1px solid rgba(58, 92, 180, 0.18);
+        border-radius: 14px;
+        font-size: clamp(0.95rem, 2.1vw, 1.05rem);
+        line-height: 1.6;
+        color: #1f2a44;
+    }
+
+
+    .group-header .group-header-top,
+    .group-header .group-header-bottom {
+        display: flex;
+        align-items: center;
+        width: 100%;
+        gap: 0.3rem;
+        flex-wrap: wrap;
+        position: relative;
+    }
+
+    .group-header .group-header-bottom {
+        margin-top: 0.2rem;
+    }
+
+
+    .group-header .category-label,
+    .group-header .subcategory-label,
+    .group-header .edit-label {
+        font-weight: 600;
+        margin-right: 0.3rem;  
+    }
+
+
+.group-header .category-value,
+.group-header .subcategory-value,
+.group-header .edit-text {
+    color: #1f2a44;
+    font-weight: 500;
+    margin-right: 1rem;  
+}
+
+.group-header .subcategory-label {
+    margin-left: 0;
+}
+
+    .video-row {
+      --video-target-height: clamp(100px, 10vw, 200px);
+      display: flex;
+      gap: 5px;
+      justify-content: center;
+      align-items: flex-start;
+      flex-wrap: wrap;
+    }
+
+    .video-item {
+      flex: 0 0 auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .video-item.video-wide {
+      width: calc(var(--video-target-height) * 16 / 9);
+      max-width: 100%;
+    }
+
+    .video-item.video-square {
+      width: var(--video-target-height);
+      max-width: 100%;
+    }
+
+    .video-frame {
+      width: 100%;
+      height: var(--video-target-height);
+      background-color: #000;
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 10px 24px -12px rgba(15, 23, 42, 0.45);
+    }
+
+    .video-item.video-wide video {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .video-item.video-square video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .video-label {
+      margin-top: 0.65rem;
+      font-size: 0.82rem;
+      color: #5b5b5b;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+
+    .carousel-controls {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      margin-top: clamp(1.25rem, 3vw, 2rem);
+    }
+
+    .carousel-button {
+      appearance: none;
+      border: none;
+      border-radius: 999px;
+      padding: 0.75rem 1.75rem;
+      font-size: 0.95rem;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      cursor: pointer;
+      background: linear-gradient(135deg, #2951ff, #3273dc);
+      color: #fff;
+      box-shadow: 0 12px 22px -12px rgba(50, 115, 220, 0.85);
+      transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+    }
+
+    .carousel-button:hover:not(:disabled) {
+      transform: translateY(-1px);
+      box-shadow: 0 16px 30px -12px rgba(50, 115, 220, 0.9);
+      filter: brightness(1.03);
+    }
+
+    .carousel-button:active:not(:disabled) {
+      transform: translateY(0);
+      box-shadow: 0 10px 20px -12px rgba(50, 115, 220, 0.85);
+    }
+
+    .carousel-button:disabled {
+      cursor: not-allowed;
+      opacity: 0.55;
+      box-shadow: none;
+      filter: saturation(0.85);
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(12px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
   </style>
   
   <script type="text/javascript">
-    // JavaScript Sort Table
-    document.addEventListener('DOMContentLoaded', function() {
-      
-      const table = document.querySelector('.js-sort-table');
-      if (!table) return;
-      
-      // Get all headers from the second row (the actual sortable headers)
-      const headerRow = table.querySelectorAll('thead tr')[1];
-      const headers = headerRow.querySelectorAll('th:not(.no-sort)');
-      
-      // Function to update active column highlighting
-      function updateActiveColumn(activeColumnIndex) {
-        // Remove all active-column classes
-        const allCells = table.querySelectorAll('td');
-        allCells.forEach(cell => cell.classList.remove('active-column'));
-        
-        // Add active-column class to cells in the active column
-        const rows = table.querySelectorAll('tbody tr');
-        rows.forEach(row => {
-          const cell = row.cells[activeColumnIndex];
-          if (cell) {
-            cell.classList.add('active-column');
-          }
-        });
-      }
-      
-      headers.forEach((header, headerIndex) => {
-        let ascending = true;
-        
-        // Calculate the actual column index in the table
-        let columnIndex = 0;
-        const allHeaders = Array.from(headerRow.querySelectorAll('th'));
-        for (let i = 0; i <= allHeaders.indexOf(header); i++) {
-          if (i === allHeaders.indexOf(header)) {
-            columnIndex = i + 5; // Add 5 for the first row columns (which are no-sort)
-            break;
-          }
-        }
-        
-        header.addEventListener('click', function() {
-          const tbody = table.querySelector('tbody');
-          const rows = Array.from(tbody.querySelectorAll('tr'));
-          
-          // Remove active class and direction classes from all headers
-          headers.forEach(h => {
-            h.classList.remove('js-sort-active');
-            h.classList.remove('js-sort-asc');
-            h.classList.remove('js-sort-desc');
-          });
-          
-          // Add active class to current header
-          header.classList.add('js-sort-active');
-          
-          // Add direction class
-          if (ascending) {
-            header.classList.add('js-sort-asc');
-          } else {
-            header.classList.add('js-sort-desc');
-          }
-          
-          // Update active column highlighting
-          updateActiveColumn(columnIndex);
-          
-          // Sort rows based on the clicked column
-          rows.sort((a, b) => {
-            let aValue = a.cells[columnIndex].textContent.trim();
-            let bValue = b.cells[columnIndex].textContent.trim();
-            
-            // Handle special cases
-            if (aValue === '-') return ascending ? 1 : -1;
-            if (bValue === '-') return ascending ? -1 : 1;
-            
-            // Try to parse as number
-            const aNum = parseFloat(aValue);
-            const bNum = parseFloat(bValue);
-            
-            if (!isNaN(aNum) && !isNaN(bNum)) {
-              return ascending ? aNum - bNum : bNum - aNum;
+    document.addEventListener('DOMContentLoaded', () => {
+      const tables = document.querySelectorAll('.js-sort-table');
+
+      tables.forEach((table) => {
+        const headers = table.querySelectorAll('th:not(.no-sort)');
+        const tbody = table.querySelector('tbody');
+        if (!tbody) return;
+
+        const updateRowNumbers = () => {
+          const rows = tbody.querySelectorAll('tr');
+          rows.forEach((row, index) => {
+            const numberCell = row.cells[0];
+            if (numberCell) {
+              numberCell.textContent = index + 1;
             }
-            
-            // String comparison
-            return ascending 
-              ? aValue.localeCompare(bValue)
-              : bValue.localeCompare(aValue);
           });
-          
-          // Reorder rows
-          rows.forEach(row => tbody.appendChild(row));
-          
-          // Update row numbers
+        };
+
+        const clearHeaderState = () => {
+          headers.forEach((header) => {
+            header.classList.remove('js-sort-active', 'js-sort-asc', 'js-sort-desc');
+          });
+        };
+
+        const clearActiveColumn = () => {
+          table.querySelectorAll('td').forEach((cell) => {
+            cell.classList.remove('active-column');
+          });
+        };
+
+        const highlightColumn = (columnIndex) => {
+          const rows = tbody.querySelectorAll('tr');
+          rows.forEach((row) => {
+            const cell = row.cells[columnIndex];
+            if (cell) {
+              cell.classList.add('active-column');
+            }
+          });
+        };
+
+        const sortTable = (columnIndex, ascending, header) => {
+          const rows = Array.from(tbody.querySelectorAll('tr'));
+
+          rows.sort((rowA, rowB) => {
+            const cellA = rowA.cells[columnIndex];
+            const cellB = rowB.cells[columnIndex];
+
+            const valueA = cellA ? cellA.textContent.trim() : '';
+            const valueB = cellB ? cellB.textContent.trim() : '';
+
+            if (valueA === '-' && valueB === '-') return 0;
+            if (valueA === '-') return ascending ? 1 : -1;
+            if (valueB === '-') return ascending ? -1 : 1;
+
+            const numA = parseFloat(valueA);
+            const numB = parseFloat(valueB);
+            const bothNumeric = !Number.isNaN(numA) && !Number.isNaN(numB);
+
+            if (bothNumeric) {
+              return ascending ? numA - numB : numB - numA;
+            }
+
+            return ascending
+              ? valueA.localeCompare(valueB)
+              : valueB.localeCompare(valueA);
+          });
+
+          rows.forEach((row) => tbody.appendChild(row));
+
           updateRowNumbers();
-          
-          // Toggle sort direction
-          ascending = !ascending;
+          clearActiveColumn();
+          highlightColumn(columnIndex);
+
+          clearHeaderState();
+          if (header) {
+            header.classList.add('js-sort-active');
+            header.classList.add(ascending ? 'js-sort-asc' : 'js-sort-desc');
+          }
+        };
+
+        headers.forEach((header) => {
+          const columnIndex = Number.parseInt(header.dataset.columnIndex, 10);
+          if (Number.isNaN(columnIndex)) return;
+
+          header.addEventListener('click', () => {
+            const isAscending = header.classList.contains('js-sort-asc');
+            sortTable(columnIndex, !isAscending, header);
+          });
         });
+
+        updateRowNumbers();
+
+        const defaultHeader = table.querySelector('th[data-column-index="2"]');
+        if (defaultHeader) {
+          sortTable(2, false, defaultHeader);
+        }
       });
-      
-      // Set initial sort on "w subs" column (Overall with subs - index 6)
-      const initialSortHeader = headers[1]; // Second sortable header (w subs in Overall)
-      if (initialSortHeader) {
-        initialSortHeader.classList.add('js-sort-active');
-        initialSortHeader.classList.add('js-sort-desc');
-        
-        // Calculate column index for initial active column
-        const allHeaders = Array.from(headerRow.querySelectorAll('th'));
-        const columnIndex = allHeaders.indexOf(initialSortHeader) + 5;
-        updateActiveColumn(columnIndex);
-      }
-      
-      // Initialize row numbers
-      updateRowNumbers();
     });
 
-    function updateRowNumbers() {
-      const table = document.querySelector("#results");
-      if (!table) return;
-      const rows = table.querySelectorAll("tbody tr");
-      rows.forEach((row, index) => {
-        row.querySelector("td").textContent = index + 1;
+    document.addEventListener("DOMContentLoaded", () => {
+      const groups = Array.from(document.querySelectorAll(".video-group"));
+      const prevButton = document.getElementById("prevGroup");
+      const nextButton = document.getElementById("nextGroup");
+      let currentGroupIndex = 0;
+
+      const syncButtonsState = () => {
+        prevButton.disabled = currentGroupIndex === 0;
+        nextButton.disabled = currentGroupIndex === groups.length - 1;
+      };
+
+      const handleVideosVisibility = (group, shouldPlay) => {
+        const videos = group.querySelectorAll("video");
+        videos.forEach((video) => {
+          if (shouldPlay) {
+            const playPromise = video.play();
+            if (playPromise !== undefined) {
+              playPromise.catch(() => {
+              });
+            }
+          } else {
+            video.pause();
+            video.currentTime = 0;
+          }
+        });
+      };
+
+      const showGroup = (index) => {
+        groups.forEach((group, i) => {
+          if (i === index) {
+            group.classList.add("is-active");
+            handleVideosVisibility(group, true);
+          } else {
+            if (group.classList.contains("is-active")) {
+              handleVideosVisibility(group, false);
+            }
+            group.classList.remove("is-active");
+          }
+        });
+        syncButtonsState();
+      };
+
+      prevButton.addEventListener("click", () => {
+        if (currentGroupIndex > 0) {
+          currentGroupIndex -= 1;
+          showGroup(currentGroupIndex);
+        }
       });
-    }
+
+      nextButton.addEventListener("click", () => {
+        if (currentGroupIndex < groups.length - 1) {
+          currentGroupIndex += 1;
+          showGroup(currentGroupIndex);
+        }
+      });
+
+      showGroup(currentGroupIndex);
+    });
   </script>
 </head>
 <body>
 
-<nav class="navbar" role="navigation" aria-label="main navigation">
-  <div class="navbar-brand">
-    <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
-      <span aria-hidden="true"></span>
-      <span aria-hidden="true"></span>
-      <span aria-hidden="true"></span>
-    </a>
-  </div>
-  <div class="navbar-menu">
-    <div class="navbar-start" style="flex-grow: 1; justify-content: center;">
-      <a class="navbar-item" href="https://github.com/RyanChenYN?tab=repositories">
-      <span class="icon">
-          <i class="fas fa-home"></i>
-      </span>
-      </a>
-
-      <div class="navbar-item has-dropdown is-hoverable">
-        <a class="navbar-link">
-          More Research
-        </a>
-        <div class="navbar-dropdown">
-          <a class="navbar-item" href="https://hypernerf.github.io">
-            HyperNeRF
-          </a>
-          <a class="navbar-item" href="https://nerfies.github.io">
-            Nerfies
-          </a>
-          <a class="navbar-item" href="https://latentfusion.github.io">
-            LatentFusion
-          </a>
-          <a class="navbar-item" href="https://photoshape.github.io">
-            PhotoShape
-          </a>
-        </div>
-      </div>
-    </div>
-
-  </div>
-</nav>
 
 
 <section class="hero">
@@ -362,7 +658,7 @@
             <div class="publication-links">
               <!-- PDF Link. -->
               <span class="link-block">
-                <a href="https://arxiv.org/pdf/2011.12948"
+                <a href=""
                    class="external-link button is-normal is-rounded is-dark">
                   <span class="icon">
                       <i class="fas fa-file-pdf"></i>
@@ -371,7 +667,7 @@
                 </a>
               </span>
               <span class="link-block">
-                <a href="https://arxiv.org/abs/2011.12948"
+                <a href=""
                    class="external-link button is-normal is-rounded is-dark">
                   <span class="icon">
                       <i class="ai ai-arxiv"></i>
@@ -379,19 +675,11 @@
                   <span>arXiv</span>
                 </a>
               </span>
-              <!-- Video Link. -->
-              <!-- <span class="link-block">
-                <a href="https://www.youtube.com/watch?v=MrKrnHhk8IA"
-                   class="external-link button is-normal is-rounded is-dark">
-                  <span class="icon">
-                      <i class="fab fa-youtube"></i>
-                  </span>
-                  <span>Video</span>
-                </a> -->
+
               </span>
               <!-- Code Link. -->
               <span class="link-block">
-                <a href="https://github.com/google/nerfies"
+                <a href=""
                    class="external-link button is-normal is-rounded is-dark">
                   <span class="icon">
                       <i class="fab fa-github"></i>
@@ -401,7 +689,7 @@
               </span>
               <!-- Dataset Link. -->
               <span class="link-block">
-                <a href="https://github.com/google/nerfies/releases/tag/0.1"
+                <a href=""
                    class="external-link button is-normal is-rounded is-dark">
                   <span class="icon">
                       <i class="far fa-images"></i>
@@ -416,22 +704,6 @@
     </div>
   </div>
 </section>
-
-<!-- <section class="hero teaser">
-  <div class="container is-max-desktop">
-    <div class="hero-body">
-      <video id="teaser" autoplay muted loop playsinline height="100%">
-        <source src="./static/videos/teaser.mp4"
-                type="video/mp4">
-      </video>
-      <h2 class="subtitle has-text-centered">
-        <span class="dnerf">Nerfies</span> turns selfie videos from your phone into
-        free-viewpoint
-        portraits.
-      </h2>
-    </div>
-  </div>
-</section> -->
 
 <section class="hero teaser">
   <div class="container is-max-desktop">
@@ -464,81 +736,179 @@
       <div id="results-carousel" class="carousel results-carousel">
         <div class="item item-short_0002">
           <video poster="" id="short_0002" autoplay controls muted loop playsinline height="100%">
-            <source src="./static/videos/short_0002.mp4"
+            <source src="./static/videos/short_0002_h264.mp4"
                     type="video/mp4">
           </video>
+          <div class="video-caption">
+            <p><span class="source-label">Source prompt:</span> The video showcases a stack of golden pancakes topped with fresh strawberries and drizzled with chocolate sauce. The setting appears to be a bright, cheerful kitchen with various breakfast items in the background.</p>
+            <p><span class="edit-label">Edit prompt:</span> Transform the video into an oil painting style</p>
+            <p><span class="target-label">Target prompt:</span> The video showcases a stack of golden pancakes topped with fresh strawberries and drizzled with chocolate sauce in an oil painting style. The setting appears to be a bright, cheerful kitchen with various breakfast items in the background.</p>
+          </div>
         </div>
         <div class="item item-short_0004">
           <video poster="" id="short_0004" autoplay controls muted loop playsinline height="100%">
-            <source src="./static/videos/short_0004.mp4"
+            <source src="./static/videos/short_0004_h264.mp4"
                     type="video/mp4">
           </video>
+          <div class="video-caption">
+            <p><span class="source-label">Source prompt:</span> Three individuals dressed in medieval-style armor are engaged in a conversation in a forest setting. They appear to be discussing something important, possibly planning a strategy or sharing information.</p>
+            <p><span class="edit-label">Edit prompt:</span> Change the style of the video to anime</p>
+            <p><span class="target-label">Target prompt:</span> Three individuals dressed in medieval-style armor are engaged in a conversation in a forest setting in anime style. They appear to be discussing something important, possibly planning a strategy or sharing information.</p>
+          </div>
+        </div>
+        <div class="item item-short_0020">
+          <video poster="" id="short_0020" autoplay controls muted loop playsinline height="100%">
+            <source src="./static/videos/short_0020_h264.mp4"
+                    type="video/mp4">
+          </video>
+          <div class="video-caption">
+            <p><span class="source-label">Source prompt:</span> The video showcases a stunning view of Earth from space during nighttime, with the planet illuminated by city lights and a bright sun on the horizon.</p>
+            <p><span class="edit-label">Edit prompt:</span> Zoom out the view of Earth from space</p>
+            <p><span class="target-label">Target prompt:</span> The video showcases a zoomed-out view of Earth from space during nighttime, with the planet illuminated by city lights and a bright sun on the horizon.</p>
+          </div>
         </div>
         <div class="item item-short_0067">
           <video poster="" id="short_0067" autoplay controls muted loop playsinline height="100%">
-            <source src="./static/videos/short_0067.mp4"
+            <source src="./static/videos/short_0067_h264.mp4"
                     type="video/mp4">
           </video>
+          <div class="video-caption">
+            <p><span class="source-label">Source prompt:</span> The video captures two individuals performing outdoors at night. One person is holding a microphone and appears to be singing or speaking, while the other stands beside them, observing or waiting for their turn. The setting is illuminated by ambient streetlights and distant city lights, creating a serene yet engaging atmosphere.</p>
+            <p><span class="edit-label">Edit prompt:</span> Add a violinist in the background</p>
+            <p><span class="target-label">Target prompt:</span> The video captures two individuals performing outdoors at night. One person is holding a microphone and appears to be singing or speaking, while the other stands beside them, observing or waiting for their turn. There is also a violinist in the background. The setting is illuminated by ambient streetlights and distant city lights, creating a serene yet engaging atmosphere.</p>
+          </div>
         </div>
         <div class="item item-short_0068">
           <video poster="" id="short_0068" autoplay controls muted loop playsinline height="100%">
-            <source src="./static/videos/short_0068.mp4"
+            <source src="./static/videos/short_0068_h264.mp4"
                     type="video/mp4">
           </video>
+          <div class="video-caption">
+            <p><span class="source-label">Source prompt:</span> A skilled artisan meticulously carves intricate details into a green jade pendant featuring a dragon design. The pendant is held securely in hand, and a precision tool is used to enhance the fine lines and textures of the dragon's scales and features.</p>
+            <p><span class="edit-label">Edit prompt:</span> Scale up the jade pendant</p>
+            <p><span class="target-label">Target prompt:</span> A skilled artisan meticulously carves intricate details into a larger green jade pendant featuring a dragon design. The pendant is held securely in hand, and a precision tool is used to enhance the fine lines and textures of the dragon's scales and features.</p>
+          </div>
         </div>
-        <div class="item item-short_0073">
-          <video poster="" id="short_0073" autoplay controls muted loop playsinline height="100%">
-            <source src="./static/videos/short_0073.mp4"
+        <div class="item item-short_00104">
+          <video poster="" id="short_0104" autoplay controls muted loop playsinline height="100%">
+            <source src="./static/videos/short_0104_h264.mp4"
                     type="video/mp4">
           </video>
+          <div class="video-caption">
+            <p><span class="source-label">Source prompt:</span> A dog wearing glasses is sitting on a bed with an open book in front of it, creating a humorous and endearing scene.</p>
+            <p><span class="edit-label">Edit prompt:</span> Move the book behind the dog.</p>
+            <p><span class="target-label">Target prompt:</span> A dog wearing glasses is sitting on a bed with the open book placed behind it, creating a humorous and endearing scene.</p>
+          </div>
+        </div>
+        <div class="item item-short_00105">
+          <video poster="" id="short_0105" autoplay controls muted loop playsinline height="100%">
+            <source src="./static/videos/short_0105_h264.mp4"
+                    type="video/mp4">
+          </video>
+          <div class="video-caption">
+            <p><span class="source-label">Source prompt:</span> A group of young people are skateboarding and running through an underground tunnel. The scene captures their dynamic movements and the urban environment around them.</p>
+            <p><span class="edit-label">Edit prompt:</span> Change the running young people to walking</p>
+            <p><span class="target-label">Target prompt:</span> A group of young people are skateboarding and walking through an underground tunnel. The scene captures their movements and the urban environment around them.</p>
+          </div>
         </div>
         <div class="item item-short_0122">
           <video poster="" id="short_0122" autoplay controls muted loop playsinline height="100%">
-            <source src="./static/videos/short_0122.mp4"
+            <source src="./static/videos/short_0122_h264.mp4"
                     type="video/mp4">
           </video>
+          <div class="video-caption">
+            <p><span class="source-label">Source prompt:</span> The video depicts a dramatic battle scene, in which a warrior dressed in black stands triumphantly atop a pile of defeated enemies under a stormy sky.</p>
+            <p><span class="edit-label">Edit prompt:</span> Change the black clothing to red</p>
+            <p><span class="target-label">Target prompt:</span> The video depicts a dramatic battle scene, in which a warrior dressed in red stands triumphantly atop a pile of defeated enemies under a stormy sky.</p>
+          </div>
+        </div>
+        <div class="item item-short_0172">
+          <video poster="" id="short_0172" autoplay controls muted loop playsinline height="100%">
+            <source src="./static/videos/short_0172_h264.mp4"
+                    type="video/mp4">
+          </video>
+          <div class="video-caption">
+            <p><span class="source-label">Source prompt:</span> The video showcases a majestic clock tower under a bright blue sky with fluffy white clouds. The tower is intricately designed with detailed architecture, featuring a large clock face and ornate sculptures. The scene is serene and emphasizes the grandeur of the structure.</p>
+            <p><span class="edit-label">Edit prompt:</span> Transform the video into a watercolor style</p>
+            <p><span class="target-label">Target prompt:</span> The video showcases a watercolor-style majestic clock tower under a bright blue sky with fluffy white clouds. The tower is intricately designed with detailed architecture, featuring a large clock face and ornate sculptures. The scene is serene and emphasizes the grandeur of the structure.</p>
+          </div>
         </div>
         <div class="item item-short_0185">
           <video poster="" id="short_0185" autoplay controls muted loop playsinline height="100%">
-            <source src="./static/videos/short_0185.mp4"
+            <source src="./static/videos/short_0185_h264.mp4"
                     type="video/mp4">
           </video>
+          <div class="video-caption">
+            <p><span class="source-label">Source prompt:</span> The video depicts a lively scene inside a cozy room where four animated characters are dancing and having fun. One character is lying on the floor, seemingly exhausted or resting, while the others are energetically moving around. The room is decorated with colorful curtains, a calendar with a rabbit design, and various household items, creating a warm and inviting atmosphere.</p>
+            <p><span class="edit-label">Edit prompt:</span> Replace the character lying on the floor with a small animated teddy bear</p>
+            <p><span class="target-label">Target prompt:</span> The video depicts a lively scene inside a cozy room where four animated characters are dancing and having fun. One small animated teddy bear is lying on the floor, seemingly exhausted or resting, while the others are energetically moving around. The room is decorated with colorful curtains, a calendar with a rabbit design, and various household items, creating a warm and inviting atmosphere.</p>
+          </div>
         </div>
         <div class="item item-short_0218">
           <video poster="" id="short_0218" autoplay controls muted loop playsinline height="100%">
-            <source src="./static/videos/short_0218.mp4"
+            <source src="./static/videos/short_0218_h264.mp4"
                     type="video/mp4">
           </video>
+          <div class="video-caption">
+            <p><span class="source-label">Source prompt:</span> The video features an animated character, a young woman with blonde hair tied in a braid, standing against a backdrop of a glowing sunset sky. She is dressed in a dark outfit and has her eyes closed, with one hand raised as if she is feeling the warmth of the sun.</p>
+            <p><span class="edit-label">Edit prompt:</span> Zoom out the view of the video</p>
+            <p><span class="target-label">Target prompt:</span> The video features an animated character, a young woman with blonde hair tied in a braid, standing against a backdrop of a glowing sunset sky. She is dressed in a dark outfit and has her eyes closed, with one hand raised as if she is feeling the warmth of the sun, shown in a wider view.</p>
+          </div>
         </div>
-        <div class="item item-short_0258">
-          <video poster="" id="short_0258" autoplay controls muted loop playsinline height="100%">
-            <source src="./static/videos/short_0258.mp4"
-                    type="video/mp4">
-          </video>
-        </div>
-        <div class="item item-short_0274">
-          <video poster="" id="short_0274" autoplay controls muted loop playsinline height="100%">
-            <source src="./static/videos/short_0274.mp4"
-                    type="video/mp4">
-          </video>
-        </div>
-        <!-- <div class="item item-long_0015">
+        <div class="item item-long_0015">
           <video poster="" id="long_0015" autoplay controls muted loop playsinline height="100%">
-            <source src="./static/videos/long_0015.mp4"
+            <source src="./static/videos/long_0015_h264.mp4"
                     type="video/mp4">
           </video>
-        </div> -->
+          <div class="video-caption">
+            <p><span class="source-label">Source prompt:</span> The video showcases the majestic Arch of Peace in Milan, Italy, under a clear blue sky. The arch is a grand structure with intricate carvings and statues, surrounded by a well-maintained green lawn. The scene is serene, with a few people walking around, adding a sense of scale to the monumental architecture.</p>
+            <p><span class="edit-label">Edit prompt:</span> Add a flock of birds flying above the Arch of Peace</p>
+            <p><span class="target-label">Target prompt:</span> The video showcases the majestic Arch of Peace in Milan, Italy, under a clear blue sky. The arch is a grand structure with intricate carvings and statues, surrounded by a well-maintained green lawn. There is a flock of birds flying above the arch. The scene is serene, with a few people walking around, adding a sense of scale to the monumental architecture.</p>
+          </div>
+        </div>
+        <div class="item item-long_0029">
+          <video poster="" id="long_0029" autoplay controls muted loop playsinline height="100%">
+            <source src="./static/videos/long_0029_h264.mp4"
+                    type="video/mp4">
+          </video>
+          <div class="video-caption">
+            <p><span class="source-label">Source prompt:</span> The video captures an aerial view of a bustling city intersection with vehicles moving in various directions. The scene is set during the day with clear visibility, showcasing the organized chaos of urban traffic.</p>
+            <p><span class="edit-label">Edit prompt:</span> Adjust the colors of the video to a warmer tone</p>
+            <p><span class="target-label">Target prompt:</span> The video captures an aerial view of a bustling city intersection with vehicles moving in various directions. The scene is set during the day with clear visibility, showcasing the organized chaos of urban traffic with warmer-toned colors.</p>
+          </div>
+        </div>
+        <div class="item item-long_0074">
+          <video poster="" id="long_0074" autoplay controls muted loop playsinline height="100%">
+            <source src="./static/videos/long_0074_h264.mp4"
+                    type="video/mp4">
+          </video>
+          <div class="video-caption">
+            <p><span class="source-label">Source prompt:</span> The video showcases a close-up of a sliced kiwi fruit, highlighting its vibrant green flesh and black seeds, set against a green background with other green fruits and vegetables.</p>
+            <p><span class="edit-label">Edit prompt:</span> Move the sliced kiwi closer to the camera.</p>
+            <p><span class="target-label">Target prompt:</span> The video showcases a close-up of a closer sliced kiwi fruit, highlighting its vibrant green flesh and black seeds. set against a green background with other green fruits and vegetables.</p>
+          </div>
+        </div>
         <div class="item item-long_0118">
           <video poster="" id="long_0118" autoplay controls muted loop playsinline height="100%">
-            <source src="./static/videos/long_0118.mp4"
+            <source src="./static/videos/long_0118_h264.mp4"
                     type="video/mp4">
           </video>
+          <div class="video-caption">
+            <p><span class="source-label">Source prompt:</span> A motorcyclist rides down a highway at dusk, wearing full protective gear and a helmet, with the motorcycle's headlights illuminating the road ahead.</p>
+            <p><span class="edit-label">Edit prompt:</span> Scale up the motorcycle and the motorcyclist</p>
+            <p><span class="target-label">Target prompt:</span> A larger motorcyclist rides down a highway at dusk, wearing full protective gear and a helmet, with the motorcycle's headlights illuminating the road ahead.</p>
+          </div>
         </div>
         <div class="item item-long_0186">
           <video poster="" id="long_0186" autoplay controls muted loop playsinline height="100%">
-            <source src="./static/videos/long_0186.mp4"
+            <source src="./static/videos/long_0186_h264.mp4"
                     type="video/mp4">
           </video>
+          <div class="video-caption">
+            <p><span class="source-label">Source prompt:</span> A woman in a black blazer is talking to a man and a woman in a room decorated with balloons and a Christmas tree.</p>
+            <p><span class="edit-label">Edit prompt:</span> Make the man, woman in black blazer, and the other woman move around the room in a coordinated dance</p>
+            <p><span class="target-label">Target prompt:</span> A woman in a black blazer, a man, and another woman are dancing around a room decorated with balloons and a Christmas tree.</p>
+          </div>
         </div>
       </div>
     </div>
@@ -589,165 +959,124 @@
 
         <h2 class="title is-3" id="leaderboard">Leaderboard</h2>
         <div class="content">
-          <p class="mt-3">Accuracy scores on Video-MME are presented for short, medium, and long videos, taking the corresponding subtitles as input or not.
+          <p class="mt-3">Comprehensive evaluation results of instruction-guided video editing methods on IVEBench.
           </p>
-          <div class="video-duration">
-            <p>
-              <strong>Short Video:</strong> &lt; 2min  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-              <strong>Medium Video:</strong> 4min ~ 15min  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-              <strong>Long Video:</strong> 30min ~ 60min
-            </p>
-            <p>
-              By default, this leaderboard is sorted by results with subtitles. To view other sorted results, please click on the corresponding cell.
-            </p>
-          </div>
+
+          <h2 class="subtitle is-4" id="leaderboard_short">Leaderboard (Short Subset)</h2>
 
           <div class="leaderboard-container">
-          <table class="js-sort-table" id="results">
+          <table class="js-sort-table leaderboard-table" id="results-short">
             <thead>
               <tr>
                 <th rowspan="2" class="no-sort" style="vertical-align: middle; width: 50px;"><strong>#</strong></th>
-                <th rowspan="2" class="no-sort" style="vertical-align: middle; width: 180px;"><strong>Model</strong></th>
-                <th rowspan="2" class="no-sort" style="vertical-align: middle; width: 80px;"><strong>LLM<br>Params</strong></th>
-                <th rowspan="2" class="no-sort" style="vertical-align: middle; width: 100px;"><strong>Frames</strong></th>
-                <th rowspan="2" class="no-sort" style="vertical-align: middle; width: 110px;"><strong>Date</strong></th>
-                <th colspan="2" class="no-sort" style="vertical-align: middle;"><strong>Overall (%)</strong></th>
-                <th colspan="2" class="no-sort" style="vertical-align: middle;"><strong>Short Video (%)</strong></th>
-                <th colspan="2" class="no-sort" style="vertical-align: middle;"><strong>Medium Video (%)</strong></th> 
-                <th colspan="2" class="no-sort" style="vertical-align: middle;"><strong>Long Video (%)</strong></th> 
+                <th rowspan="2" class="no-sort" style="vertical-align: middle; width: 150px;"><strong>Method</strong></th>
+                <th rowspan="2" style="vertical-align: middle; width: 100px;" data-column-index="2"><strong>Total Score</strong></th>
+                <th rowspan="2" style="vertical-align: middle; width: 100px;" data-column-index="3"><strong>Video Quality</strong></th>
+                <th rowspan="2" style="vertical-align: middle; width: 120px;" data-column-index="4"><strong>Instruction<br>Compliance</strong></th>
+                <th rowspan="2" style="vertical-align: middle; width: 100px;" data-column-index="5"><strong>Video Fidelity</strong></th>
+                <th colspan="5" class="no-sort" style="vertical-align: middle;"><strong>Video Quality (Details)</strong></th>
+                <th colspan="4" class="no-sort" style="vertical-align: middle;"><strong>Instruction Compliance (Details)</strong></th>
+                <th colspan="3" class="no-sort" style="vertical-align: middle;"><strong>Video Fidelity (Details)</strong></th>
               </tr>
               <tr>
-                <th><strong>w/o subs</strong></th>
-                <th><strong>w subs</strong></th>
-                <th><strong>w/o subs</strong></th>
-                <th><strong>w subs</strong></th>
-                <th><strong>w/o subs</strong></th>
-                <th><strong>w subs</strong></th>
-                <th><strong>w/o subs</strong></th>
-                <th><strong>w subs</strong></th>
+                <th style="width: 100px;" data-column-index="6"><strong>Subject<br>Consistency</strong></th>
+                <th style="width: 110px;" data-column-index="7"><strong>Background<br>Consistency</strong></th>
+                <th style="width: 100px;" data-column-index="8"><strong>Temporal<br>Flickering</strong></th>
+                <th style="width: 100px;" data-column-index="9"><strong>Motion<br>Smoothness</strong></th>
+                <th style="width: 80px;" data-column-index="10"><strong>VTSS</strong></th>
+                <th style="width: 120px;" data-column-index="11"><strong>Overall Semantic<br>Consistency</strong></th>
+                <th style="width: 120px;" data-column-index="12"><strong>Phrase Semantic<br>Consistency</strong></th>
+                <th style="width: 120px;" data-column-index="13"><strong>Instruction<br>Satisfaction</strong></th>
+                <th style="width: 110px;" data-column-index="14"><strong>Quantity<br>Accuracy</strong></th>
+                <th style="width: 110px;" data-column-index="15"><strong>Semantic<br>Fidelity</strong></th>
+                <th style="width: 110px;" data-column-index="16"><strong>Motion<br>Fidelity</strong></th>
+                <th style="width: 110px;" data-column-index="17"><strong>Content<br>Fidelity</strong></th>
               </tr>
             </thead>
             <tbody>
               <tr>
                 <td>1</td>
-                <td style="text-align: left; padding: 2px 10px;">
-                  <b>
-                    <a href="https://github.com/bytedance/video-SALMONN-2" style="font-size: 16px; margin-left: 5px;">video-SALMONN 2+</a>
-                    <p style="font-size: 12px; margin-left: 5px; color: #858383;">THU & ByteDance</p>
-                  </b>
-                </td>
-                <td>72B</td>
-                <td>10 fps</td>
-                <td><strong style="color: #22a56e;">2025-09-28</strong></td>
-                <td><b>79.7</b></td>
-                <td><b>81.6</b></td>
-                <td>85.0</td>
-                <td>85.4</td>
-                <td>81.7</td>
-                <td>83.0</td>
-                <td>72.3</td>
-                <td>76.4</td>                                 
+                <td style="text-align: left; padding: 8px;"><strong>InsV2V</strong></td>
+                <td>0.65715</td>
+                <td>0.802357</td>
+                <td>0.374118</td>
+                <td>0.794976</td>
+                <td>0.901442</td>
+                <td>0.944001</td>
+                <td>0.975373</td>
+                <td>0.975373</td>
+                <td>0.04835</td>
+                <td>0.240611</td>
+                <td>0.229095</td>
+                <td>3.1</td>
+                <td>0.2</td>
+                <td>0.952295</td>
+                <td>0.678833</td>
+                <td>4.125</td>
               </tr>
               <tr>
                 <td>2</td>
-                <td style="text-align: left; padding: 2px 10px;">
-                  <b>
-                    <a href="https://storage.googleapis.com/deepmind-media/gemini/gemini_v1_5_report.pdf" style="font-size: 16px; margin-left: 5px;">Gemini 1.5 Pro</a>
-                    <p style="font-size: 12px; margin-left: 5px; color: #858383;">Google</p>
-                  </b>
-                </td>
-                <td>-</td>
-                <td>1/0.5 fps</td>
-                <td>2024-06-15</td>
-                <td><b>75.0</b></td>
-                <td><b>81.3</b></td>
-                <td>81.7</td>
-                <td>84.5</td>
-                <td>74.3</td>
-                <td>81.0</td>
-                <td>67.4</td>
-                <td>77.4</td>                                 
+                <td style="text-align: left; padding: 8px;"><strong>VACE</strong></td>
+                <td>0.616088</td>
+                <td>0.801204</td>
+                <td>0.267255</td>
+                <td>0.779804</td>
+                <td>0.916832</td>
+                <td>0.94867</td>
+                <td>0.959168</td>
+                <td>0.959168</td>
+                <td>0.048467</td>
+                <td>0.235583</td>
+                <td>0.215446</td>
+                <td>2.27</td>
+                <td>0.2</td>
+                <td>0.963778</td>
+                <td>0.883994</td>
+                <td>3.735</td>
               </tr>
               <tr>
                 <td>3</td>
-                <td style="text-align: left; padding: 2px 10px;">
-                  <b>
-                    <a href="https://github.com/SCZwangxiao/video-FlexReduc" style="font-size: 16px; margin-left: 5px;">AdaReTaKe</a>
-                    <p style="font-size: 12px; margin-left: 5px; color: #858383;">HIT & Huawei</p>
-                  </b>
-                </td>
-                <td>72B</td>
-                <td>1024</td>
-                <td><strong style="color: #22a56e;">2025-03-04</strong></td>
-                <td><b>73.5</b></td>
-                <td><b>79.6</b></td>
-                <td>80.6</td>
-                <td>82.8</td>
-                <td>74.9</td>
-                <td>79.7</td>
-                <td>65.0</td>
-                <td>76.4</td>                                 
+                <td style="text-align: left; padding: 8px;"><strong>Anyv2v</strong></td>
+                <td>0.55052</td>
+                <td>0.724021</td>
+                <td>0.355533</td>
+                <td>0.572005</td>
+                <td>0.836517</td>
+                <td>0.91594</td>
+                <td>0.969898</td>
+                <td>0.969898</td>
+                <td>0.028747</td>
+                <td>0.215527</td>
+                <td>0.228784</td>
+                <td>3.251852</td>
+                <td>0</td>
+                <td>0.796468</td>
+                <td>0.824666</td>
+                <td>2.651852</td>
               </tr>
-              <!-- 这里继续添加剩余的所有行数据... -->
               <tr>
                 <td>4</td>
-                <td style="text-align: left; padding: 2px 10px;">
-                  <b>
-                    <a href="https://github.com/Kwai-Keye/Keye" style="font-size: 16px; margin-left: 5px;">Keye-VL-1.5</a>
-                    <p style="font-size: 12px; margin-left: 5px; color: #858383;">Kwai Keye Team</p>
-                  </b>
-                </td>
-                <td>8B</td>
-                <td>64</td>
-                <td><strong style="color: #22a56e;">2025-08-29</strong></td>
-                <td><b>73.0</b></td>
-                <td><b>74.0</b></td>
-                <td>81.2</td>
-                <td>84.0</td>
-                <td>70.7</td>
-                <td>71.9</td>
-                <td>67.1</td>
-                <td>66.2</td>                                 
+                <td style="text-align: left; padding: 8px;"><strong>StableV2V</strong></td>
+                <td>0.509333</td>
+                <td>0.693736</td>
+                <td>0.420937</td>
+                <td>0.413327</td>
+                <td>0.828293</td>
+                <td>0.905021</td>
+                <td>0.962683</td>
+                <td>0.962683</td>
+                <td>0.02092</td>
+                <td>0.204132</td>
+                <td>0.234756</td>
+                <td>3.44898</td>
+                <td>0.25</td>
+                <td>0.70401</td>
+                <td>0.773338</td>
+                <td>1.785714</td>
               </tr>
-              <tr>
-                <td>5</td>
-                <td style="text-align: left; padding: 2px 10px;">
-                  <b>
-                    <a href="https://github.com/Hui-design/TSPO" style="font-size: 16px; margin-left: 5px;">TSPO</a>
-                    <p style="font-size: 12px; margin-left: 5px; color: #858383;">XJTU & TeleAI & USTB</p>
-                  </b>
-                </td>
-                <td>72B</td>
-                <td>128</td>
-                <td><strong style="color: #22a56e;">2025-09-22</strong></td>
-                <td><b>73.0</b></td>
-                <td><b>73.7</b></td>
-                <td>81.3</td>
-                <td>83.4</td>
-                <td>73.6</td>
-                <td>74.2</td>
-                <td>64.0</td>
-                <td>63.6</td>                                 
-              </tr>
-              <!-- 继续添加第6-20行... 这里省略以节省空间 -->
             </tbody>                                                   
           </table>
           </div>
-
-          <p style="margin-top: 20px;">
-            <strong style="color: #22a56e; font-size: 18px;">Green date</strong> indicates the newly added/updated models  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            - indicates closed-source models
-          </p>
-
-          <p style="text-align: left; margin-top: 15px;">
-            1* The short and medium videos are sampled at 1 fps, while the long videos are sampled at 0.5 fps to ensure the stability of the API.
-            <br>2* The videos less than 384 seconds are sampled at 1 fps, and for those longer than 384 seconds, we extract 384 frames uniformly.
-            <br>3* The videos are sampled at 2 fps, and the upper limit is 768 frames.
-            <br>4* The videos are sampled at 1 fps, and the upper limit is 600 frames.
-            <br>5* The videos are sampled at 2 fps, and the upper limit is 480 frames.
-            <br>6* The videos are sampled at 10 fps, and the upper limit is 768 frames.
-            <br>7* The videos are sampled at 1 fps, and the upper limit is 256 frames.
-          </p>
 
         </div>
 
@@ -755,8 +1084,141 @@
     </div>
 
   </div>
-</section>
 <!-- END LEADERBOARD SECTION -->
+
+<div class="container">
+    
+  <div class="columns is-centered">
+    <div class="column is-full has-text-centered content">
+
+      <h2 class="subtitle is-4" id="leaderboard_long">Leaderboard (Long Subset)</h2>
+      <div class="content">
+
+        <div class="leaderboard-container">
+          <table class="js-sort-table leaderboard-table" id="results-long">
+            <thead>
+              <tr>
+                <th rowspan="2" class="no-sort" style="vertical-align: middle; width: 50px;"><strong>#</strong></th>
+                <th rowspan="2" class="no-sort" style="vertical-align: middle; width: 150px;"><strong>Method</strong></th>
+                <th rowspan="2" style="vertical-align: middle; width: 100px;" data-column-index="2"><strong>Total Score</strong></th>
+                <th rowspan="2" style="vertical-align: middle; width: 100px;" data-column-index="3"><strong>Video Quality</strong></th>
+                <th rowspan="2" style="vertical-align: middle; width: 120px;" data-column-index="4"><strong>Instruction<br>Compliance</strong></th>
+                <th rowspan="2" style="vertical-align: middle; width: 100px;" data-column-index="5"><strong>Video Fidelity</strong></th>
+                <th colspan="5" class="no-sort" style="vertical-align: middle;"><strong>Video Quality (Details)</strong></th>
+                <th colspan="4" class="no-sort" style="vertical-align: middle;"><strong>Instruction Compliance (Details)</strong></th>
+                <th colspan="3" class="no-sort" style="vertical-align: middle;"><strong>Video Fidelity (Details)</strong></th>
+              </tr>
+              <tr>
+                <th style="width: 100px;" data-column-index="6"><strong>Subject<br>Consistency</strong></th>
+                <th style="width: 110px;" data-column-index="7"><strong>Background<br>Consistency</strong></th>
+                <th style="width: 100px;" data-column-index="8"><strong>Temporal<br>Flickering</strong></th>
+                <th style="width: 100px;" data-column-index="9"><strong>Motion<br>Smoothness</strong></th>
+                <th style="width: 80px;" data-column-index="10"><strong>VTSS</strong></th>
+                <th style="width: 120px;" data-column-index="11"><strong>Overall Semantic<br>Consistency</strong></th>
+                <th style="width: 120px;" data-column-index="12"><strong>Phrase Semantic<br>Consistency</strong></th>
+                <th style="width: 120px;" data-column-index="13"><strong>Instruction<br>Satisfaction</strong></th>
+                <th style="width: 110px;" data-column-index="14"><strong>Quantity<br>Accuracy</strong></th>
+                <th style="width: 110px;" data-column-index="15"><strong>Semantic<br>Fidelity</strong></th>
+                <th style="width: 110px;" data-column-index="16"><strong>Motion<br>Fidelity</strong></th>
+                <th style="width: 110px;" data-column-index="17"><strong>Content<br>Fidelity</strong></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>1</td>
+                <td style="text-align: left; padding: 8px;"><strong>InsV2V</strong></td>
+                <td>0.65715</td>
+                <td>0.802357</td>
+                <td>0.374118</td>
+                <td>0.794976</td>
+                <td>0.901442</td>
+                <td>0.944001</td>
+                <td>0.975373</td>
+                <td>0.975373</td>
+                <td>0.04835</td>
+                <td>0.240611</td>
+                <td>0.229095</td>
+                <td>3.1</td>
+                <td>0.2</td>
+                <td>0.952295</td>
+                <td>0.678833</td>
+                <td>4.125</td>
+              </tr>
+              <tr>
+                <td>2</td>
+                <td style="text-align: left; padding: 8px;"><strong>VACE</strong></td>
+                <td>0.616088</td>
+                <td>0.801204</td>
+                <td>0.267255</td>
+                <td>0.779804</td>
+                <td>0.916832</td>
+                <td>0.94867</td>
+                <td>0.959168</td>
+                <td>0.959168</td>
+                <td>0.048467</td>
+                <td>0.235583</td>
+                <td>0.215446</td>
+                <td>2.27</td>
+                <td>0.2</td>
+                <td>0.963778</td>
+                <td>0.883994</td>
+                <td>3.735</td>
+              </tr>
+              <tr>
+                <td>3</td>
+                <td style="text-align: left; padding: 8px;"><strong>Anyv2v</strong></td>
+                <td>0.55052</td>
+                <td>0.724021</td>
+                <td>0.355533</td>
+                <td>0.572005</td>
+                <td>0.836517</td>
+                <td>0.91594</td>
+                <td>0.969898</td>
+                <td>0.969898</td>
+                <td>0.028747</td>
+                <td>0.215527</td>
+                <td>0.228784</td>
+                <td>3.251852</td>
+                <td>0</td>
+                <td>0.796468</td>
+                <td>0.824666</td>
+                <td>2.651852</td>
+              </tr>
+              <tr>
+                <td>4</td>
+                <td style="text-align: left; padding: 8px;"><strong>StableV2V</strong></td>
+                <td>0.509333</td>
+                <td>0.693736</td>
+                <td>0.420937</td>
+                <td>0.413327</td>
+                <td>0.828293</td>
+                <td>0.905021</td>
+                <td>0.962683</td>
+                <td>0.962683</td>
+                <td>0.02092</td>
+                <td>0.204132</td>
+                <td>0.234756</td>
+                <td>3.44898</td>
+                <td>0.25</td>
+                <td>0.70401</td>
+                <td>0.773338</td>
+                <td>1.785714</td>
+              </tr>
+            </tbody>                                                   
+          </table>
+        </div>
+
+        <p style="text-align: left; margin-top: 25px; font-size: 14px; color: #666; margin-bottom: 30px;">
+          <strong>Note:</strong> Higher values indicate better performance for all metrics. Click on column headers to sort by different metrics.
+        </p>
+
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
 
 <section class="hero is-light is-small">
   <div class="hero-body has-text-centered">
@@ -806,8 +1268,10 @@
       </div>
     </div>
     
-  
+  </div>
 </section>
+
+
 
 
 <section class="hero is-light is-small">
@@ -818,30 +1282,447 @@
   </div>
 </section>
 
-
 <section class="section">
   <div class="container">
     <div class="columns is-centered">
       <div class="column">
         <div class="content has-text-centered">
-          <h2 class="title is-3" style="margin-top: 30px;">Quantitative Visualization</h2>
+          <h2 class="title is-3" style="margin-top: 30px;">Qualitative Visualization</h2>
+
+          
+          <div id="results-carousel" class="results-carousel"> 
+          <div class="video-groups-wrapper" aria-live="polite">
+            <!-- 组 1 -->
+            <div class="video-group is-active" data-group-index="0">
+              <div class="video-row">
+                <div class="video-item video-wide">
+                  <div class="video-frame">
+                    <video poster="" id="short_0004_source" autoplay controls muted loop playsinline>
+                      <source src="./static/videos_compare/source/short_0004_h264.mp4" type="video/mp4" />
+                    </video>
+                  </div>
+                  <div class="video-label">Source Video</div>
+                </div>
+
+                <div class="video-item video-square">
+                  <div class="video-frame">
+                    <video poster="" id="short_0004_insv2v" autoplay controls muted loop playsinline>
+                      <source src="./static/videos_compare/insv2v/short_0004_h264.mp4" type="video/mp4" />
+                    </video>
+                  </div>
+                  <div class="video-label">InsV2V</div>
+                </div>
+
+                <div class="video-item video-square">
+                  <div class="video-frame">
+                    <video poster="" id="short_0004_anyv2v" autoplay controls muted loop playsinline>
+                      <source src="./static/videos_compare/anyv2v/short_0004_h264.mp4" type="video/mp4" />
+                    </video>
+                  </div>
+                  <div class="video-label">AnyV2V</div>
+                </div>
+
+                <div class="video-item video-square">
+                  <div class="video-frame">
+                    <video poster="" id="short_0004_stablev2v" autoplay controls muted loop playsinline>
+                      <source src="./static/videos_compare/stablev2v/short_0004_h264.mp4" type="video/mp4" />
+                    </video>
+                  </div>
+                  <div class="video-label">StableV2V</div>
+                </div>
+
+                <div class="video-item video-wide">
+                  <div class="video-frame">
+                    <video poster="" id="short_0004_vace" autoplay controls muted loop playsinline>
+                      <source src="./static/videos_compare/vace/short_0004_h264.mp4" type="video/mp4" />
+                    </video>
+                  </div>
+                  <div class="video-label">VACE</div>
+                </div>
+              </div>
+              <div class="group-header">
+                <div class="group-header-top">
+                  <span class="category-label">Category:</span><span class="category-value">Style Editing</span><span class="subcategory-label">Subcategory:</span><span class="subcategory-value">Anime</span>
+                </div>
+                <div class="group-header-bottom">
+                  <span class="edit-label">Edit prompt:</span><span class="edit-text">Change the style of the video to anime</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- 组 2 -->
+            <div class="video-group" data-group-index="1">
+              <div class="video-row">
+                <div class="video-item video-wide">
+                  <div class="video-frame">
+                    <video poster="" id="short_0036_source" autoplay controls muted loop playsinline>
+                      <source src="./static/videos_compare/source/short_0036_h264.mp4" type="video/mp4" />
+                    </video>
+                  </div>
+                  <div class="video-label">Source Video</div>
+                </div>
+
+                <div class="video-item video-square">
+                  <div class="video-frame">
+                    <video poster="" id="short_0036_insv2v" autoplay controls muted loop playsinline>
+                      <source src="./static/videos_compare/insv2v/short_0036_h264.mp4" type="video/mp4" />
+                    </video>
+                  </div>
+                  <div class="video-label">InsV2V</div>
+                </div>
+
+                <div class="video-item video-square">
+                  <div class="video-frame">
+                    <video poster="" id="short_0036_anyv2v" autoplay controls muted loop playsinline>
+                      <source src="./static/videos_compare/anyv2v/short_0036_h264.mp4" type="video/mp4" />
+                    </video>
+                  </div>
+                  <div class="video-label">AnyV2V</div>
+                </div>
+
+                <div class="video-item video-square">
+                  <div class="video-frame">
+                    <video poster="" id="short_0036_stablev2v" autoplay controls muted loop playsinline>
+                      <source src="./static/videos_compare/stablev2v/short_0036_h264.mp4" type="video/mp4" />
+                    </video>
+                  </div>
+                  <div class="video-label">StableV2V</div>
+                </div>
+
+                <div class="video-item video-wide">
+                  <div class="video-frame">
+                    <video poster="" id="short_0036_vace" autoplay controls muted loop playsinline>
+                      <source src="./static/videos_compare/vace/short_0036_h264.mp4" type="video/mp4" />
+                    </video>
+                  </div>
+                  <div class="video-label">VACE</div>
+                </div>
+              </div>
+              <div class="group-header">
+                <div class="group-header-top">
+                  <span class="category-label">Category:</span><span class="category-value">Effect Editing</span><span class="subcategory-label">Subcategory:</span><span class="subcategory-value">Transition</span>
+                </div>
+                <div class="group-header-bottom">
+                  <span class="edit-label">Edit prompt:</span><span class="edit-text">After a wave-foam transition, the small fishing boat is eaten by a giant whale</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- 组 3 -->
+            <div class="video-group" data-group-index="2">
+              <div class="video-row">
+                <div class="video-item video-wide">
+                  <div class="video-frame">
+                    <video poster="" id="short_0044_source" autoplay controls muted loop playsinline>
+                      <source src="./static/videos_compare/source/short_0044_h264.mp4" type="video/mp4" />
+                    </video>
+                  </div>
+                  <div class="video-label">Source Video</div>
+                </div>
+
+                <div class="video-item video-square">
+                  <div class="video-frame">
+                    <video poster="" id="short_0044_insv2v" autoplay controls muted loop playsinline>
+                      <source src="./static/videos_compare/insv2v/short_0044_h264.mp4" type="video/mp4" />
+                    </video>
+                  </div>
+                  <div class="video-label">InsV2V</div>
+                </div>
+
+                <div class="video-item video-square">
+                  <div class="video-frame">
+                    <video poster="" id="short_0044_anyv2v" autoplay controls muted loop playsinline>
+                      <source src="./static/videos_compare/anyv2v/short_0044_h264.mp4" type="video/mp4" />
+                    </video>
+                  </div>
+                  <div class="video-label">AnyV2V</div>
+                </div>
+
+                <div class="video-item video-square">
+                  <div class="video-frame">
+                    <video poster="" id="short_0044_stablev2v" autoplay controls muted loop playsinline>
+                      <source src="./static/videos_compare/stablev2v/short_0044_h264.mp4" type="video/mp4" />
+                    </video>
+                  </div>
+                  <div class="video-label">StableV2V</div>
+                </div>
+
+                <div class="video-item video-wide">
+                  <div class="video-frame">
+                    <video poster="" id="short_0044_vace" autoplay controls muted loop playsinline>
+                      <source src="./static/videos_compare/vace/short_0044_h264.mp4" type="video/mp4" />
+                    </video>
+                  </div>
+                  <div class="video-label">VACE</div>
+                </div>
+              </div>
+              <div class="group-header">
+                <div class="group-header-top">
+                  <span class="category-label">Category:</span><span class="category-value">Subject Editing</span><span class="subcategory-label">Subcategory:</span><span class="subcategory-value">Replace Existing Subject</span>
+                </div>
+                <div class="group-header-bottom">
+                  <span class="edit-label">Edit prompt:</span><span class="edit-text">Replace the water bottle in the scene with a newspaper</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- 组 4 -->
+            <div class="video-group" data-group-index="3">
+              <div class="video-row">
+                <div class="video-item video-wide">
+                  <div class="video-frame">
+                    <video poster="" id="short_0064_source" autoplay controls muted loop playsinline>
+                      <source src="./static/videos_compare/source/short_0064_h264.mp4" type="video/mp4" />
+                    </video>
+                  </div>
+                  <div class="video-label">Source Video</div>
+                </div>
+
+                <div class="video-item video-square">
+                  <div class="video-frame">
+                    <video poster="" id="short_0064_insv2v" autoplay controls muted loop playsinline>
+                      <source src="./static/videos_compare/insv2v/short_0064_h264.mp4" type="video/mp4" />
+                    </video>
+                  </div>
+                  <div class="video-label">InsV2V</div>
+                </div>
+
+                <div class="video-item video-square">
+                  <div class="video-frame">
+                    <video poster="" id="short_0064_anyv2v" autoplay controls muted loop playsinline>
+                      <source src="./static/videos_compare/anyv2v/short_0064_h264.mp4" type="video/mp4" />
+                    </video>
+                  </div>
+                  <div class="video-label">AnyV2V</div>
+                </div>
+
+                <div class="video-item video-square">
+                  <div class="video-frame">
+                    <video poster="" id="short_0064_stablev2v" autoplay controls muted loop playsinline>
+                      <source src="./static/videos_compare/stablev2v/short_0064_h264.mp4" type="video/mp4" />
+                    </video>
+                  </div>
+                  <div class="video-label">StableV2V</div>
+                </div>
+
+                <div class="video-item video-wide">
+                  <div class="video-frame">
+                    <video poster="" id="short_0064_vace" autoplay controls muted loop playsinline>
+                      <source src="./static/videos_compare/vace/short_0064_h264.mp4" type="video/mp4" />
+                    </video>
+                  </div>
+                  <div class="video-label">VACE</div>
+                </div>
+              </div>
+              <div class="group-header">
+                <div class="group-header-top">
+                  <span class="category-label">Category:</span><span class="category-value">Camera Angle Editing</span><span class="subcategory-label">Subcategory:</span><span class="subcategory-value">Front View</span>
+                </div>
+                <div class="group-header-bottom">
+                  <span class="edit-label">Edit prompt:</span><span class="edit-text">Change the view to a front view</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- 组 5 -->
+            <div class="video-group" data-group-index="4">
+              <div class="video-row">
+                <div class="video-item video-wide">
+                  <div class="video-frame">
+                    <video poster="" id="short_0080_source" autoplay controls muted loop playsinline>
+                      <source src="./static/videos_compare/source/short_0080_h264.mp4" type="video/mp4" />
+                    </video>
+                  </div>
+                  <div class="video-label">Source Video</div>
+                </div>
+
+                <div class="video-item video-square">
+                  <div class="video-frame">
+                    <video poster="" id="short_0080_insv2v" autoplay controls muted loop playsinline>
+                      <source src="./static/videos_compare/insv2v/short_0080_h264.mp4" type="video/mp4" />
+                    </video>
+                  </div>
+                  <div class="video-label">InsV2V</div>
+                </div>
+
+                <div class="video-item video-square">
+                  <div class="video-frame">
+                    <video poster="" id="short_0080_anyv2v" autoplay controls muted loop playsinline>
+                      <source src="./static/videos_compare/anyv2v/short_0080_h264.mp4" type="video/mp4" />
+                    </video>
+                  </div>
+                  <div class="video-label">AnyV2V</div>
+                </div>
+
+                <div class="video-item video-square">
+                  <div class="video-frame">
+                    <video poster="" id="short_0080_stablev2v" autoplay controls muted loop playsinline>
+                      <source src="./static/videos_compare/stablev2v/short_0080_h264.mp4" type="video/mp4" />
+                    </video>
+                  </div>
+                  <div class="video-label">StableV2V</div>
+                </div>
+
+                <div class="video-item video-wide">
+                  <div class="video-frame">
+                    <video poster="" id="short_0080_vace" autoplay controls muted loop playsinline>
+                      <source src="./static/videos_compare/vace/short_0080_h264.mp4" type="video/mp4" />
+                    </video>
+                  </div>
+                  <div class="video-label">VACE</div>
+                </div>
+              </div>
+              <div class="group-header">
+                <div class="group-header-top">
+                  <span class="category-label">Category:</span><span class="category-value">Subject Motion Editing</span><span class="subcategory-label">Subcategory:</span><span class="subcategory-value">Single Subject Motion</span>
+                </div>
+                <div class="group-header-bottom">
+                  <span class="edit-label">Edit prompt:</span><span class="edit-text">Make the static spider-man in the mural dynamic and make him swing faster</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- 组 6 -->
+            <div class="video-group" data-group-index="5">
+              <div class="video-row">
+                <div class="video-item video-wide">
+                  <div class="video-frame">
+                    <video poster="" id="short_0172_source" autoplay controls muted loop playsinline>
+                      <source src="./static/videos_compare/source/short_0172_h264.mp4" type="video/mp4" />
+                    </video>
+                  </div>
+                  <div class="video-label">Source Video</div>
+                </div>
+
+                <div class="video-item video-square">
+                  <div class="video-frame">
+                    <video poster="" id="short_0172_insv2v" autoplay controls muted loop playsinline>
+                      <source src="./static/videos_compare/insv2v/short_0172_h264.mp4" type="video/mp4" />
+                    </video>
+                  </div>
+                  <div class="video-label">InsV2V</div>
+                </div>
+
+                <div class="video-item video-square">
+                  <div class="video-frame">
+                    <video poster="" id="short_0172_anyv2v" autoplay controls muted loop playsinline>
+                      <source src="./static/videos_compare/anyv2v/short_0172_h264.mp4" type="video/mp4" />
+                    </video>
+                  </div>
+                  <div class="video-label">AnyV2V</div>
+                </div>
+
+                <div class="video-item video-square">
+                  <div class="video-frame">
+                    <video poster="" id="short_0172_stablev2v" autoplay controls muted loop playsinline>
+                      <source src="./static/videos_compare/stablev2v/short_0172_h264.mp4" type="video/mp4" />
+                    </video>
+                  </div>
+                  <div class="video-label">StableV2V</div>
+                </div>
+
+                <div class="video-item video-wide">
+                  <div class="video-frame">
+                    <video poster="" id="short_0172_vace" autoplay controls muted loop playsinline>
+                      <source src="./static/videos_compare/vace/short_0172_h264.mp4" type="video/mp4" />
+                    </video>
+                  </div>
+                  <div class="video-label">VACE</div>
+                </div>
+              </div>
+              <div class="group-header">
+                <div class="group-header-top">
+                  <span class="category-label">Category:</span><span class="category-value">Style Editing</span><span class="subcategory-label">Subcategory:</span><span class="subcategory-value">Watercolor</span>
+                </div>
+                <div class="group-header-bottom">
+                  <span class="edit-label">Edit prompt:</span><span class="edit-text">Transform the video into a watercolor style</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- 组 7 -->
+            <div class="video-group" data-group-index="6">
+              <div class="video-row">
+                <div class="video-item video-wide">
+                  <div class="video-frame">
+                    <video poster="" id="short_0384_source" autoplay controls muted loop playsinline>
+                      <source src="./static/videos_compare/source/short_0384_h264.mp4" type="video/mp4" />
+                    </video>
+                  </div>
+                  <div class="video-label">Source Video</div>
+                </div>
+
+                <div class="video-item video-square">
+                  <div class="video-frame">
+                    <video poster="" id="short_0384_insv2v" autoplay controls muted loop playsinline>
+                      <source src="./static/videos_compare/insv2v/short_0384_h264.mp4" type="video/mp4" />
+                    </video>
+                  </div>
+                  <div class="video-label">InsV2V</div>
+                </div>
+
+                <div class="video-item video-square">
+                  <div class="video-frame">
+                    <video poster="" id="short_0384_anyv2v" autoplay controls muted loop playsinline>
+                      <source src="./static/videos_compare/anyv2v/short_0384_h264.mp4" type="video/mp4" />
+                    </video>
+                  </div>
+                  <div class="video-label">AnyV2V</div>
+                </div>
+
+                <div class="video-item video-square">
+                  <div class="video-frame">
+                    <video poster="" id="short_0384_stablev2v" autoplay controls muted loop playsinline>
+                      <source src="./static/videos_compare/stablev2v/short_0384_h264.mp4" type="video/mp4" />
+                    </video>
+                  </div>
+                  <div class="video-label">StableV2V</div>
+                </div>
+
+                <div class="video-item video-wide">
+                  <div class="video-frame">
+                    <video poster="" id="short_0384_vace" autoplay controls muted loop playsinline>
+                      <source src="./static/videos_compare/vace/short_0384_h264.mp4" type="video/mp4" />
+                    </video>
+                  </div>
+                  <div class="video-label">VACE</div>
+                </div>
+              </div>
+              <div class="group-header">
+                <div class="group-header-top">
+                  <span class="category-label">Category:</span><span class="category-value">Camera Motion Editing</span><span class="subcategory-label">Subcategory:</span><span class="subcategory-value">Dolly In</span>
+                </div>
+                <div class="group-header-bottom">
+                  <span class="edit-label">Edit prompt:</span><span class="edit-text">Move the camera closer to the man in the black shirt</span>
+                </div>
+              </div>
+            </div>
+
+
+
+          <nav class="carousel-controls" aria-label="切换视频分组">
+            <button id="prevGroup" class="carousel-button" type="button" aria-label="Previous Group" disabled>Previous Group</button>
+            <button id="nextGroup" class="carousel-button" type="button" aria-label="Next Group">Next Group</button>
+          </nav>
+        </div>
+          <img src="./static/images/qualitative_analysis.png" alt="data-composition" style="max-width: 90%; display: block; margin: 50px auto 0 auto;">
+          <p style="text-align: center; margin: 40px auto 80px auto; width: 50%;"> 
+              Qualitative comparison of state-of-the-art IVE methods.
+          </p>
+      </div>
+    </div>
+
+
+          <h2 class="title is-3" style="margin-top: 30px; text-align: center;">Quantitative Visualization</h2>
           <img src="./static/images/radar_chart.png" alt="data-composition" style="max-width: 90%; display: block; margin: 0 auto;">
           <p style="text-align: center; margin: 40px auto 80px auto; width: 50%;"> 
               <strong>IVEBench Evaluation Results of Video Editing Models.</strong> We visualize the evaluation results of four IVE models in 12 IVEBench metrics. We normalize the results per dimension for clearer comparisons.
           </p>
 
-          <img src="./static/images/qualitative_analysis.png" alt="data-composition" style="max-width: 90%; display: block; margin: 0 auto;">
-          <p style="text-align: center; margin: 40px auto 80px auto; width: 50%;"> 
-              Qualitative comparison of state-of-the-art IVE methods.
-          </p>
-          <img src="./static/images/qualitative_analysis_appendix.png" alt="data-composition" style="max-width: 90%; display: block; margin: 0 auto;">
-          <p style="text-align: center; margin: 40px auto 80px auto; width: 50%;"> 
-              <strong>Detailed qualitative comparison.</strong> We concatenate the first, middle, and last frames of the video to facilitate comparison of the temporal performance across different models.
-          </p>
-
         </div>
       </div>
     </div>
+  </div>
 </section>
 
 
@@ -849,11 +1730,11 @@
 <section class="section" id="BibTeX">
   <div class="container is-max-desktop content">
     <h2 class="title">BibTeX</h2>
-    <pre><code>@article{park2021nerfies,
-  author    = {Park, Keunhong and Sinha, Utkarsh and Barron, Jonathan T. and Bouaziz, Sofien and Goldman, Dan B and Seitz, Steven M. and Martin-Brualla, Ricardo},
+    <pre><code>@article{chen2025ivebench,
+  author    = {yinanchen, yuxiangzeng, zhucunxue, qingdonghe, chengjiewang, yongliu, xiaobinhuxiaobinhu, shuichengyan},
   title     = {IVEBench: Modern Benchmark Suite for Instruction-Guided Video Editing Assessment},
-  journal   = {ICCV},
-  year      = {2021},
+  journal   = {arXiv preprint arXiv:xxx},
+  year      = {2025},
 }</code></pre>
   </div>
 </section>
@@ -880,36 +1761,3 @@
 
 </body>
 </html>
-
-
-<style>
-/* --------------------------------------
-   学术论文风格标题（带两端对齐）
--------------------------------------- */
-.overview-text {
-  font-size: 1.05rem;
-  line-height: 1.65;
-  max-width: 900px;
-  margin: 1.5rem auto 0 auto;
-  text-align: justify;              /* ✅ 两端对齐 */
-  text-justify: inter-word;         /* 均匀分布单词间距 */
-  color: #222;
-  hyphens: auto;                    /* 自动断词 */
-}
-
-/* 方法名样式 */
-.overview-text .method {
-  font-family: "Courier New", Courier, monospace;
-  font-weight: bold;
-  color: #333;
-}
-
-/* 响应式微调 */
-@media (max-width: 768px) {
-  .overview-text {
-    font-size: 0.95rem;
-    line-height: 1.55;
-    padding: 0 1rem;
-  }
-}
-</style>
